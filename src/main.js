@@ -1,7 +1,19 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
+import { createApp } from "vue";
+import "./style.css";
+import App from "./App.vue";
+// 全局状态共享 pinia
+import { createPinia } from "pinia";
+// UI组件库 naive
+import naive from "naive-ui";
+// 路由 vue-router
+import router from "@/router/index";
 
-import naive from 'naive-ui'
+const pinia = createPinia();
 
-createApp(App).use(naive).mount('#app')
+const app = createApp(App);
+
+
+app.use(router);
+app.use(pinia);
+app.use(naive);
+app.mount("#app");

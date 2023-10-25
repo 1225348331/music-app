@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import 'element-plus/es/components/notification/style/css'
+import "element-plus/es/components/notification/style/css";
 import { ElNotification } from "element-plus";
 
 const active = ref(false);
