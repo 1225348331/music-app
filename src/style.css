@@ -1,8 +1,11 @@
-*{
+* {
   margin: 0px;
   padding: 0px;
 }
 
+body{
+  height: 100vh;
+}
 /* @font-face {
   font-family: "myfont-4";
   src: url(@/assets/font/4.woff);

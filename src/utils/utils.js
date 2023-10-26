@@ -1,7 +1,6 @@
 import axios from "axios";
-import { useNotification } from 'naive-ui'
-const notification = useNotification()
-
+import "element-plus/es/components/notification/style/css";
+import { ElNotification } from "element-plus";
 // 创建实例时配置默认值
 const request = axios.create({
   baseURL: "https://musicapi.jiangyuhui.top",
@@ -29,9 +28,6 @@ request.interceptors.request.use(
     return config;
   },
   function (error) {
-    notification.error({
-      content: '出现错误了'
-    })
     // 对请求错误做些什么
     return Promise.reject(error);
   }
@@ -49,6 +45,7 @@ request.interceptors.response.use(
   }
 );
 
+export default request
 
 // 登录
 export async function login() {
@@ -160,7 +157,6 @@ export async function getUrl(id) {
   });
   return res.data.data[0].url;
 }
-
 // 获取用户详情
 export async function getUserDetail(id) {
   // 8906224199
@@ -174,11 +170,10 @@ export async function getUserDetail(id) {
   });
   console.log(res.data);
 }
-
 // 获取登录状态
 export async function getLoginStatus(id) {
-  if(!localStorage.getItem('music-cookie')){
-    return null
+  if (!localStorage.getItem("music-cookie")) {
+    return null;
   }
   // 344515582
   const res = await request({
@@ -199,36 +194,11 @@ export async function getLoginStatus(id) {
   console.log("当前账号会员等级为", res.data.data.account.vipType);
   return res.data.data.account.id;
 }
-
 // 获取账号信息
 export async function getUserAccount() {
   const res = await request({
     url: `/user/account`,
     method: "get",
-  });
-  console.log(res.data);
-}
-
-// 发送验证码
-export async function captchaSent() {
-  const res = await request({
-    url: `/captcha/sent`,
-    method: "get",
-    params: {
-      phone: 15951605681,
-    },
-  });
-  console.log(res);
-}
-
-// 验证验证码
-export async function captchaVerify() {
-  const res = await request({
-    url: `captcha/verify`,
-    method: "post",
-    params: {
-      phone: 15951605681,
-    },
   });
   console.log(res.data);
 }
@@ -264,7 +234,6 @@ export function lyricParser(lrcGet) {
   });
   return lrcArray;
 }
-
 export async function getAllMusicTest(idlist) {
   const res = await request({
     url: `/song/url?id=${idlist}`,
@@ -282,3 +251,5 @@ export async function getAllMusicTest(idlist) {
 
   console.log(res.data);
 }
+
+
