@@ -1,12 +1,9 @@
 <script setup>
 import { onMounted, h, ref, onBeforeMount } from "vue";
 import "element-plus/es/components/notification/style/css";
-import { ElNotification } from "element-plus";
 import { RouterLink, useRouter } from "vue-router";
+import Player from "@/components/player/player.vue";
 
-const router = useRouter();
-
-const active = ref(false);
 const activeKey = ref("home");
 
 const menuOptions = [
@@ -16,7 +13,7 @@ const menuOptions = [
         RouterLink,
         {
           to: {
-            name: "login",
+            name: "home",
           },
         },
         { default: () => "首页" }
@@ -29,7 +26,7 @@ const menuOptions = [
         RouterLink,
         {
           to: {
-            name: "home",
+            name: "login",
           },
         },
         { default: () => "发现" }
@@ -42,7 +39,7 @@ const menuOptions = [
         RouterLink,
         {
           to: {
-            name: "home",
+            name: "test",
           },
         },
         { default: () => "音乐馆" }
@@ -58,65 +55,70 @@ const themeOverrides = {
     borderHover: "1px solid #f55e55",
     borderFocus: "1px solid #f55e55",
   },
+  Slider: {
+    fillColor: "#f55e55",
+    fillColorHover: "#f55e55",
+  },
+  Tabs: {
+    tabTextColorActiveLine: "#f55e55",
+    tabTextColorHoverLine: "#f55e55",
+    tabTextColorActiveBar: "#f55e55",
+    tabTextColorHoverBar: "#f55e55",
+    tabTextColorActiveCard: "#f55e55",
+    barColor: "#f55e55",
+  },
+  Menu: {
+    itemTextColorActive: "#f55e55",
+    itemTextColorActiveHover: "#f55e55",
+    itemTextColorChildActive: "#f55e55",
+    itemTextColorChildActiveHover: "#f55e55",
+    itemTextColorHoverHorizontal: "#f55e55",
+    itemTextColorActiveHorizontal: "#f55e55",
+    itemTextColorActiveHoverHorizontal: "#f55e55",
+    itemTextColorChildActiveHorizontal: "#f55e55",
+    itemTextColorChildActiveHoverHorizontal: "#f55e55",
+  },
 };
-
-onBeforeMount(() => {
-  let cookie = localStorage.getItem("music-cookie");
-  if (cookie) {
-    router.push({
-      name: "home",
-    });
-    ElNotification({
-      title: "欢迎登录",
-      message: `欢迎来到小辉辉的音乐屋~`,
-      type: "success",
-    });
-  } else {
-    router.push({
-      name: "login",
-    });
-    ElNotification({
-      title: "尚未登录",
-      message: `您尚未登录，请登录后重试~`,
-      type: "success",
-    });
-  }
-});
 
 onMounted(() => {});
 </script>
 
 <template>
-  <n-config-provider :theme-overrides="themeOverrides">
-    <div style="height: 100vh; background-color: rgb(250, 250, 252)">
-      <n-space justify="space-around" size="large">
-        <div class="left">
-          <div class="logo"></div>
-          <div class="prev"></div>
-          <div class="next"></div>
-        </div>
-        <div class="center">
-          <n-menu
-            v-model:value="activeKey"
-            mode="horizontal"
-            :options="menuOptions"
-          />
-        </div>
-        <div class="right">33</div>
-      </n-space>
-      <n-scrollbar style="max-height: calc(100vh - 60px)">
-        <div class="main">
-          <router-view v-slot="{ Component }">
-            <keep-alive>
+  <n-message-provider placement="top-right">
+    <n-config-provider :theme-overrides="themeOverrides">
+      <div style="height: 100vh; background-color: rgb(250, 250, 252)">
+        <n-space justify="space-around" size="large">
+          <div class="left">
+            <div class="logo"></div>
+            <div class="prev"></div>
+            <div class="next"></div>
+          </div>
+          <div class="center">
+            <n-menu
+              v-model:value="activeKey"
+              mode="horizontal"
+              :options="menuOptions"
+            />
+          </div>
+          <div class="right">33</div>
+        </n-space>
+        <n-scrollbar style="max-height: calc(100vh - 130px)">
+          <div class="main">
+            <router-view v-slot="{ Component }">
               <Transition name="scale" mode="out-in">
-                <component :is="Component" />
+                <keep-alive>
+                  <component :is="Component" />
+                </keep-alive>
               </Transition>
-            </keep-alive>
-          </router-view>
+            </router-view>
+          </div>
+        </n-scrollbar>
+        <div class="musicPlayer">
+          <Player />
         </div>
-      </n-scrollbar>
-    </div>
-  </n-config-provider>
+      </div>
+    </n-config-provider>
+  </n-message-provider>
 </template>
 <style lang="scss" scoped>
 .n-space {
@@ -145,6 +147,13 @@ onMounted(() => {});
     padding-top: 50px;
   }
 }
+
+.musicPlayer {
+  box-sizing: border-box;
+  height: 70px;
+  // border: 1px solid red;
+}
+
 /* 路由跳转动画 */
 .scale-enter-active {
   transition: all 0.1s ease-out;

@@ -1,32 +1,46 @@
 <script setup>
-import { onBeforeMount, onMounted, ref } from "vue";
+import { computed, onBeforeMount, onMounted, ref } from "vue";
 import { getUserPlaylist } from "@/api/user.js";
+import { getMusicList } from "@/api/cover.js";
 import useMainStore from "@/store/index.js";
 import { HeadsetRound } from "@vicons/material";
 
 const mainStore = useMainStore();
 
-const coverList = ref(null);
+// 总歌曲
+const allCoverList = ref([]);
+// 渲染的数据
+const showCoverList = computed(() => {
+  return allCoverList.value.slice(
+    pageSize.value * (currentPage.value - 1),
+    pageSize.value * currentPage.value
+  );
+});
+// 当前页
+const currentPage = ref(1);
+// 每页显示数量
+const pageSize = ref(18);
+// 共几页
+const pageNum = computed(() => {
+  return Math.ceil(allCoverList.value.length / pageSize.value) || 1;
+});
+
+// 播放歌单
+const playCover = async (cover) => {
+  await getMusicList(cover.id);
+};
 
 onMounted(async () => {
-  console.log(mainStore.userData.id);
   let playlistRes = await getUserPlaylist(mainStore.userData.id);
-  coverList.value = playlistRes.playlist;
-  console.log(playlistRes);
-  // playlistRes.coverImgUrl
-  // playlistRes.name
-  // playlistRes.playCount
-  // playlistRes.creator.nickname
+  allCoverList.value = playlistRes.playlist;
 });
 </script>
 <template>
   <div class="coverList">
-    <div class="cover" v-for="item in coverList">
+    <div class="cover" v-for="item in showCoverList" @click="playCover(item)">
       <div class="img">
         <div class="playCount">
-          <n-icon>
-            <HeadsetRound theme="filled" />
-          </n-icon>
+          <n-icon :component="HeadsetRound"></n-icon>
           {{ item.playCount }}
         </div>
         <img :src="item.coverImgUrl" alt="" />
@@ -38,6 +52,11 @@ onMounted(async () => {
         By{{ item.creator.nickname }}</n-ellipsis
       >
     </div>
+    <n-pagination
+      size="large"
+      v-model:page="currentPage"
+      :page-count="pageNum"
+    />
   </div>
 </template>
 <style lang="scss" scoped>
@@ -75,7 +94,7 @@ onMounted(async () => {
         background-color: rgba(0, 24, 23, 0.5);
         border-top-left-radius: 8px;
         z-index: 1;
-        .n-icon{
+        .n-icon {
           margin-right: 3px;
         }
       }
@@ -90,6 +109,10 @@ onMounted(async () => {
         }
       }
     }
+  }
+
+  .n-pagination {
+    margin: 40px auto;
   }
 }
 </style>

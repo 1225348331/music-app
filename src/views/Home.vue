@@ -1,16 +1,12 @@
 <script setup>
-import { onBeforeMount, onMounted, ref } from "vue";
+import { onBeforeMount, ref, onMounted, watch, provide } from "vue";
 import useMainStore from "@/store/index.js";
 import { useRouter } from "vue-router";
-import { getUserAccount } from "@/api/user.js";
 
 const userStore = useMainStore();
 const router = useRouter();
-
-// 头像
-const avatarUrl = ref(null);
-// 昵称
-const nickname = ref(null);
+const drawerShow = ref(false);
+const tabValue = ref(router.currentRoute.value.path.split("/")[1]);
 
 const handleUpdateValue = (value) => {
   router.push({
@@ -18,15 +14,13 @@ const handleUpdateValue = (value) => {
   });
 };
 
-onBeforeMount(async () => {
-  let res = await getUserAccount();
-  avatarUrl.value = res.profile.avatarUrl;
-  nickname.value = res.profile.nickname;
-  userStore.userData.id = res.profile.userId;
-  router.push({
-    name: "user-playlists",
-  });
-});
+// 监听路由参数变化
+watch(
+  () => router.currentRoute.value,
+  (val) => {
+    tabValue.value = val.path.split("/")[1];
+  }
+);
 </script>
 <template>
   <div class="home">
@@ -34,10 +28,10 @@ onBeforeMount(async () => {
       <div
         class="userLogo"
         :style="{
-          background: `url(${avatarUrl})`,
+          background: `url(${userStore.userData.avatarUrl})`,
         }"
       ></div>
-      <div class="userTitle">{{ nickname }}</div>
+      <div class="userTitle">{{ userStore.userData.name }}</div>
       <div
         style="
           font-size: 20px;
@@ -50,17 +44,26 @@ onBeforeMount(async () => {
         的音乐库
       </div>
     </div>
-    <n-tabs type="line" animated @update:value="handleUpdateValue">
+    <n-tabs
+      type="line"
+      :value="tabValue"
+      animated
+      @update:value="handleUpdateValue"
+    >
       <n-tab name="user-playlists"> 我的歌单 </n-tab>
       <n-tab name="user-like">收藏的歌单</n-tab>
       <n-tab name="user-album">收藏的专辑</n-tab>
       <n-tab name="user-artists">收藏的歌手</n-tab>
       <n-tab name="user-cloud">音乐云盘</n-tab>
     </n-tabs>
-    <div class="router">
-      <router-view></router-view>
-    </div>
-    
+
+    <router-view v-slot="{ Component }">
+      <Transition name="scale" mode="out-in">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </Transition>
+    </router-view>
   </div>
 </template>
 <style lang="scss" scoped>
@@ -87,5 +90,19 @@ onBeforeMount(async () => {
       font-weight: bolder;
     }
   }
+}
+
+/* 路由跳转动画 */
+.scale-enter-active {
+  transition: all 0.1s ease-out;
+}
+
+.scale-leave-active {
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.scale-enter-from,
+.scale-leave-to {
+  transform: translateX(20px);
+  opacity: 0;
 }
 </style>
