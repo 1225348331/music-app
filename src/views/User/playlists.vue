@@ -28,11 +28,13 @@ const pageNum = computed(() => {
 // 播放歌单
 const playCover = async (cover) => {
   await getMusicList(cover.id);
+  mainStore.player.currentMusicIndex = 0;
 };
 
 onMounted(async () => {
   let playlistRes = await getUserPlaylist(mainStore.userData.id);
   allCoverList.value = playlistRes.playlist;
+  console.log(allCoverList.value)
 });
 </script>
 <template>

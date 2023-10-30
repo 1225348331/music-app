@@ -84,7 +84,7 @@ onMounted(() => {});
 </script>
 
 <template>
-  <n-message-provider placement="top-right">
+  <n-notification-provider :max="3">
     <n-config-provider :theme-overrides="themeOverrides">
       <div style="height: 100vh; background-color: rgb(250, 250, 252)">
         <n-space justify="space-around" size="large">
@@ -118,7 +118,7 @@ onMounted(() => {});
         </div>
       </div>
     </n-config-provider>
-  </n-message-provider>
+  </n-notification-provider>
 </template>
 <style lang="scss" scoped>
 .n-space {

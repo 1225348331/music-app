@@ -13,6 +13,8 @@ export async function getMusicList(id) {
     method: "post",
   });
 
+  console.log(res)
+
   let list = [];
   res.data.songs.forEach((item) => {
     list.push({

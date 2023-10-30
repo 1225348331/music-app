@@ -26,6 +26,12 @@ const mainStore = defineStore("mainStore", {
         url: "",
         pic: "",
         lyr: "",
+        lyric: [],
+      },
+      player: {
+        isPlay: false,
+        currentMusicIndex: 0,
+        sequence: true,
       },
       // 歌词相关参数
       currentLrcIndex: 0,
