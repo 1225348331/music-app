@@ -87,11 +87,9 @@ onMounted(() => {});
   <n-notification-provider :max="3">
     <n-config-provider :theme-overrides="themeOverrides">
       <div style="height: 100vh; background-color: rgb(250, 250, 252)">
-        <n-space justify="space-around" size="large">
+        <n-space class="header" justify="space-around" size="large">
           <div class="left">
             <div class="logo"></div>
-            <div class="prev"></div>
-            <div class="next"></div>
           </div>
           <div class="center">
             <n-menu
@@ -102,7 +100,7 @@ onMounted(() => {});
           </div>
           <div class="right">33</div>
         </n-space>
-        <n-scrollbar style="max-height: calc(100vh - 130px)">
+        <n-scrollbar class="body" style="max-height: calc(100vh - 130px)">
           <div class="main">
             <router-view v-slot="{ Component }">
               <Transition name="scale" mode="out-in">
@@ -151,7 +149,6 @@ onMounted(() => {});
 .musicPlayer {
   box-sizing: border-box;
   height: 70px;
-  // border: 1px solid red;
 }
 
 /* 路由跳转动画 */
