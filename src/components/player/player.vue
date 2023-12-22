@@ -17,7 +17,6 @@ import { getSongUrl, getLyric, lyricParser } from "@/api/cover.js";
 
 
 const musicStore = useMusicStore();
-
 const drawerShow = ref(false);
 const notification = useNotification();
 

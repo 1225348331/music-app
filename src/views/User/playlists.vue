@@ -2,9 +2,12 @@
 import { computed, onBeforeMount, onMounted, ref } from "vue";
 import { getUserPlaylist } from "@/api/user.js";
 import { getMusicList } from "@/api/cover.js";
+import useMusicStore from "@/store/music.js";
 import useMainStore from "@/store/index.js";
 import { HeadsetRound } from "@vicons/material";
+import { playMusicList } from '@/utils/play-utils'
 
+const musicStore = useMusicStore();
 const mainStore = useMainStore();
 
 // 总歌曲
@@ -27,14 +30,12 @@ const pageNum = computed(() => {
 
 // 播放歌单
 const playCover = async (cover) => {
-  await getMusicList(cover.id);
-  mainStore.player.currentMusicIndex = 0;
+  playMusicList(cover.id)
 };
 
 onMounted(async () => {
   let playlistRes = await getUserPlaylist(mainStore.userData.id);
   allCoverList.value = playlistRes.playlist;
-  console.log(allCoverList.value)
 });
 </script>
 <template>

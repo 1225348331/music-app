@@ -1,6 +1,5 @@
 import request from "@/utils/utils.js";
-import useMainStore from "@/store/index";
-
+import useMusicStore from "@/store/music.js";
 
 /**
  * @description: 获取歌单
@@ -13,21 +12,17 @@ export async function getMusicList(id) {
     method: "post",
   });
 
-  console.log(res)
-
   let list = [];
   res.data.songs.forEach((item) => {
     list.push({
       id: item.id,
       name: item.name,
       artist: item.ar[0].name,
-      url: "",
-      lrc: "",
       pic: item.al.picUrl,
     });
   });
-  const mainStore = useMainStore();
-  mainStore.userPlayLists = list;
+
+  console.log(list);
   return list;
 }
 
@@ -40,7 +35,9 @@ export async function getSongUrl(id) {
     url: `/song/url?id=${id}`,
     method: "get",
   });
-  return res.data.data[0].url;
+  let url = res.data.data[0].url;
+  if (!url.includes("https")) url = url.split("http").join("https");
+  return url;
 }
 
 /**

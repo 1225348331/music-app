@@ -9,32 +9,6 @@ const mainStore = defineStore("mainStore", {
         name: "", // 用户昵称
         avatarUrl: "", // 用户头像
       },
-      // 用户歌单
-      userPlayLists: [],
-      // slider相关参数
-      slider: {
-        currentValue: 0,
-        currentTime: "00:00",
-        durationTime: "02:34",
-        max: 0,
-      },
-      // 当前播放音乐参数
-      currentMusic: {
-        id: "",
-        name: "",
-        artist: "",
-        url: "",
-        pic: "",
-        lyr: "",
-        lyric: [],
-      },
-      player: {
-        isPlay: false,
-        currentMusicIndex: 0,
-        sequence: true,
-      },
-      // 歌词相关参数
-      currentLrcIndex: 0,
     };
   },
   getters: {},

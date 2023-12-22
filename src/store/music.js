@@ -11,6 +11,8 @@ const useMusicStore = defineStore("musicStore", {
       volume: 1,
       // 播放 / 暂停
       isPlay: false,
+      // 当前播放音乐在音乐列表中的索引
+      currentMusicIndex: 0,
     },
     // 进度条参数
     progress: {
@@ -29,7 +31,6 @@ const useMusicStore = defineStore("musicStore", {
       artist: "",
       url: "",
       pic: "",
-      lyr: "",
       lyric: [],
     },
     // 歌词

@@ -234,6 +234,7 @@ export function lyricParser(lrcGet) {
   });
   return lrcArray;
 }
+
 export async function getAllMusicTest(idlist) {
   const res = await request({
     url: `/song/url?id=${idlist}`,
