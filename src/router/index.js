@@ -73,18 +73,18 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from) => {
-  let cookie = localStorage.getItem("music-cookie");
-  if (!cookie) {
-    ElNotification({
-      title: "尚未登录",
-      message: `您尚未登录，请登录后重试~`,
-      type: "success",
-    });
-    return {
-      name: "login",
-    };
-  }
-});
+// router.beforeEach((to, from) => {
+//   let cookie = localStorage.getItem("music-cookie");
+//   if (!cookie) {
+//     ElNotification({
+//       title: "尚未登录",
+//       message: `您尚未登录，请登录后重试~`,
+//       type: "success",
+//     });
+//     return {
+//       name: "login",
+//     };
+//   }
+// });
 
 export default router;
