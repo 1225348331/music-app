@@ -5,32 +5,17 @@ import { getMusicList } from "@/api/cover.js";
 import useMusicStore from "@/store/music.js";
 import useMainStore from "@/store/index.js";
 import { HeadsetRound } from "@vicons/material";
-import { playMusicList } from '@/utils/play-utils'
+import { playMusicList } from "@/utils/play-utils";
 
 const musicStore = useMusicStore();
 const mainStore = useMainStore();
 
 // 总歌曲
 const allCoverList = ref([]);
-// 渲染的数据
-const showCoverList = computed(() => {
-  return allCoverList.value.slice(
-    pageSize.value * (currentPage.value - 1),
-    pageSize.value * currentPage.value
-  );
-});
-// 当前页
-const currentPage = ref(1);
-// 每页显示数量
-const pageSize = ref(18);
-// 共几页
-const pageNum = computed(() => {
-  return Math.ceil(allCoverList.value.length / pageSize.value) || 1;
-});
 
 // 播放歌单
 const playCover = async (cover) => {
-  playMusicList(cover.id)
+  playMusicList(cover.id);
 };
 
 onMounted(async () => {
@@ -40,8 +25,8 @@ onMounted(async () => {
 </script>
 <template>
   <div class="coverList">
-    <div class="cover" v-for="item in showCoverList" @click="playCover(item)">
-      <div class="img">
+    <div class="cover" v-for="item in allCoverList">
+      <div class="img" @click="playCover(item)">
         <div class="playCount">
           <n-icon :component="HeadsetRound"></n-icon>
           {{ item.playCount }}
@@ -55,24 +40,18 @@ onMounted(async () => {
         By{{ item.creator.nickname }}</n-ellipsis
       >
     </div>
-    <n-pagination
-      size="large"
-      v-model:page="currentPage"
-      :page-count="pageNum"
-    />
   </div>
 </template>
 <style lang="scss" scoped>
 .coverList {
   display: flex;
   flex-flow: row wrap;
-  justify-content: space-between;
+  justify-content: flex-start;
   height: 100%;
-  margin-top: 20px;
 
   .cover {
     width: 210px;
-    margin: 10px 0px;
+    margin: 10px 20px;
     border-radius: 10px;
     cursor: pointer;
     display: flex;
@@ -82,9 +61,10 @@ onMounted(async () => {
       width: 210px;
       height: 210px;
       border-radius: 8px;
-      box-shadow: 0px 1px 1px 0px rgb(0, 0, 0, 0.1);
+      box-shadow: 10px 0px 10px 3px rgb(0, 0, 0, 0.3);
       overflow: hidden;
       position: relative;
+
 
       .playCount {
         position: absolute;

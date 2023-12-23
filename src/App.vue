@@ -16,7 +16,7 @@ const menuOptions = [
             name: "home",
           },
         },
-        { default: () => "首页" }
+        { default: () => "我的歌单" }
       ),
     key: "home",
   },
@@ -29,9 +29,9 @@ const menuOptions = [
             name: "login",
           },
         },
-        { default: () => "发现" }
+        { default: () => "我的喜欢" }
       ),
-    key: "faxian",
+    key: "login",
   },
   {
     label: () =>
@@ -42,9 +42,9 @@ const menuOptions = [
             name: "test",
           },
         },
-        { default: () => "音乐馆" }
+        { default: () => "我的云盘" }
       ),
-    key: "music",
+    key: "test",
   },
 ];
 
@@ -141,8 +141,9 @@ onMounted(() => {});
 .n-scrollbar {
   .main {
     margin: 0 auto;
-    max-width: 1400px;
-    padding-top: 50px;
+    max-width: 1510px;
+    padding-top: 25px;
+    padding-bottom: 25px;
   }
 }
 

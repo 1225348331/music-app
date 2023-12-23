@@ -111,3 +111,11 @@ export async function qrLogin() {
     }
   }, 3000);
 }
+
+export async function loginOut(){
+  const res = await request({
+    method: "get",
+    url: `/logout`,
+  });
+  console.log(res)
+}

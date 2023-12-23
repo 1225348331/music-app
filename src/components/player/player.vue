@@ -10,27 +10,15 @@ import {
   SkipPreviousRound,
   SkipNextRound,
   MenuOpenRound,
-  HeadsetRound
+  HeadsetRound,
 } from "@vicons/material";
 /* api */
 import { getSongUrl, getLyric, lyricParser } from "@/api/cover.js";
-
+import { formatTime } from "@/utils/time-utils";
 
 const musicStore = useMusicStore();
 const drawerShow = ref(false);
 const notification = useNotification();
-
-
-// 格式化时间
-const formatTime = (time) => {
-  // 329 => 05:29
-  var min = parseInt(time / 60);
-  var sec = parseInt(time % 60);
-  min = min < 10 ? "0" + min : min;
-  sec = sec < 10 ? "0" + sec : sec;
-
-  return `${min}:${sec}`;
-};
 
 const changeIndex = (isNext) => {
   if (musicStore.player.sequence) {
@@ -44,21 +32,29 @@ const changeIndex = (isNext) => {
   }
 };
 
+const handleUpdateValue = (value) => {
+  musicStore.audioPlayer.seek(value)
 
+};
 </script>
 <template>
   <div class="player">
     <!-- 播放进度条 -->
     <div class="slider">
-      <div class="time">{{ musicStore.progress.currentTime }}</div>
-      <n-slider v-model:value="musicStore.progress.value" :max="musicStore.progress.max" :step="0.01">
+      <div class="time">{{ formatTime(musicStore.progress.value) }}</div>
+      <n-slider
+        v-model:value="musicStore.progress.value"
+        :max="musicStore.progress.max"
+        :step="0.01"
+        @update:value="handleUpdateValue"
+      >
         <template #thumb>
           <n-icon-wrapper color="#f55e55" :size="18" :border-radius="9">
             <n-icon :size="12" :component="HeadsetRound" />
           </n-icon-wrapper>
         </template>
       </n-slider>
-      <div class="time">{{ musicStore.progress.durationTime }}</div>
+      <div class="time">{{ formatTime(musicStore.progress.max) }}</div>
     </div>
     <!-- 歌曲信息 -->
     <div class="info">
@@ -72,12 +68,16 @@ const changeIndex = (isNext) => {
         </div>
         <div class="musicInfo">
           <div class="musicName">{{ musicStore.currentMusicInfo.name }}</div>
-          <div class="musicArtist">{{ musicStore.currentMusicInfo.artist }}</div>
+          <div class="musicArtist">
+            {{ musicStore.currentMusicInfo.artist }}
+          </div>
         </div>
         <div class="lyric">
           {{
             musicStore.currentMusicInfo.lyric.length
-              ? musicStore.currentMusicInfo.lyric[musicStore.currrentLrcIndex].c
+              ? musicStore.currentMusicInfo.lyric[
+                  musicStore.lyric.currentLyricIndex
+                ].c
               : ""
           }}
         </div>
@@ -94,14 +94,14 @@ const changeIndex = (isNext) => {
           color="rgb(245, 94, 85)"
           :component="PlayCircleFilled"
           v-show="!musicStore.player.isPlay"
-          @click="musicStore.player.isPlay = !musicStore.player.isPlay"
+          @click="musicStore.audioPlayer.play"
         ></n-icon>
         <n-icon
           size="47"
           color="rgb(245, 94, 85)"
           :component="PauseCircleFilledFilled"
           v-show="musicStore.player.isPlay"
-          @click="musicStore.player.isPlay = !musicStore.player.isPlay"
+          @click="musicStore.audioPlayer.pause"
         ></n-icon>
         <n-icon
           size="35"
@@ -128,7 +128,7 @@ const changeIndex = (isNext) => {
             marginBottom: '12px',
           }"
           class="songCard"
-          v-for="(item, index) in musicStore.userPlayLists"
+          v-for="(item, index) in musicStore.musicList"
         >
           <span>{{ index }}</span>
           <span>{{ item.name }}</span>
@@ -256,7 +256,5 @@ const changeIndex = (isNext) => {
       }
     }
   }
-
-  
 }
 </style>

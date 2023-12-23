@@ -18,9 +18,7 @@ const useMusicStore = defineStore("musicStore", {
     progress: {
       min: 0,
       max: 400,
-      value: 0,
-      currentTime: "00:00",
-      durationTime: "03:43",
+      value: 0
     },
     // 歌单
     musicList: [],
