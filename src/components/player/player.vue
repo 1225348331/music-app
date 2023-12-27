@@ -14,21 +14,13 @@ import {
 } from "@vicons/material";
 
 /* 工具类 */
-import { playMusic } from "@/utils/play-utils";
-import { formatTime, playPreIndex, playNextIndex } from "@/utils/utils";
+import { playPreIndex, playNextIndex } from "@/utils/play-utils";
+import { formatTime } from "@/utils/utils";
 
 const musicStore = useMusicStore();
 const notification = useNotification();
 // 抽屉显隐控制
 const drawerShow = ref(false);
-
-// watch(
-//   () => musicStore.currentMusicInfo.id,
-//   (val) => {
-//     console.log("当前播放歌曲为：" + val);
-//     // playMusic(musicStore.musicList[val].id);
-//   }
-// );
 
 // 进度条拖拽
 const handleUpdateValue = (value) => {

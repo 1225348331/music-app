@@ -1,6 +1,6 @@
 import { Howl, Howler } from "howler";
 import useMusicStore from "@/store/music";
-import { getCurrentLyricIndex } from "@/utils/play-utils";
+import { getCurrentLyricIndex, playNextIndex } from "@/utils/play-utils";
 
 /* 音乐播放器 */
 class player {
@@ -42,13 +42,15 @@ class player {
     });
     // 播放进行中时间
     player?.on("seek", () => {
-      console.log("我被触发了");
+      console.log("seek被触发了");
     });
     // 结束事件
     player?.on("end", () => {
       _this.cancelTimeUpdate();
       musicStore.player.isPlay = false;
       console.log("当前音乐播放结束啦");
+      // 自动播放下一首
+      playNextIndex()
     });
     // 错误事件
     player?.on("loaderror", () => {});
@@ -77,6 +79,9 @@ class player {
   }
   stop() {
     if (window.player) window.player.stop();
+  }
+  unload() {
+    if (window.player) window.player.unload();
   }
   timeUpdate() {
     let _this = this;

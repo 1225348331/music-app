@@ -14,6 +14,7 @@ let routes = [
       const userStore = useMainStore();
       if (!userStore.userData.id) {
         let res = await getUserAccount();
+        console.log(res)
         userStore.userData.avatarUrl = res.profile.avatarUrl;
         userStore.userData.name = res.profile.nickname;
         userStore.userData.id = res.profile.userId;

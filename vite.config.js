@@ -16,6 +16,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "https://musicapi.jiangyuhui.top/",
+        // target: "http://localhost:3003/",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""), // 不可以省略rewrite
       },

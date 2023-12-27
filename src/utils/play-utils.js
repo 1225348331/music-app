@@ -6,8 +6,6 @@ import useMusicStore from "@/store/music";
  * @return {*}
  */
 export async function playMusicList(id) {
-  // 重置播放器信息
-  resetPlayInfo();
   let musicStore = useMusicStore();
   // 获取歌单列表
   musicStore.musicList = await getMusicList(id);
@@ -23,8 +21,13 @@ export async function playMusicList(id) {
  * @return {*}
  */
 export async function playMusic(id) {
+  // 重置播放器信息
+  resetPlayInfo();
+  // 设置音乐基础信息
   setMusicInfo();
+  // 设置歌词
   await setLyric(id);
+  // 播放歌曲
   await playSong(id);
 }
 
@@ -37,8 +40,9 @@ export async function playSong(id) {
   let musicStore = useMusicStore();
   // 获取歌曲链接
   let url = await getSongUrl(id);
-  // 播放歌曲
+  // 加载歌曲
   musicStore.audioPlayer.loadMusic(url);
+  // 播放歌曲
   musicStore.audioPlayer.play();
 }
 
@@ -53,11 +57,10 @@ export async function setLyric(id) {
   let lyrString = await getLyric(id);
   // 解析设置歌词
   musicStore.currentMusicInfo.lyric = lyricParser(lyrString);
-  console.log(musicStore.currentMusicInfo.lyric);
 }
 
 /**
- * @description: 设置音乐信息
+ * @description: 设置音乐基础信息
  * @return {*}
  */
 export async function setMusicInfo() {
@@ -104,7 +107,7 @@ export function getCurrentLyricIndex(x) {
 function resetPlayInfo() {
   let musicStore = useMusicStore();
   // 播放器停止
-  musicStore.audioPlayer.stop();
+  musicStore.audioPlayer.unload();
   // 进度条归0
   musicStore.progress.value = 0;
   // 歌曲名重置
@@ -115,4 +118,59 @@ function resetPlayInfo() {
   musicStore.currentMusicInfo.pic = "/src/assets/loading.gif";
   // 歌词重置
   musicStore.currentMusicInfo.lyric.length = 0;
+  // 歌词索引重置
+  musicStore.lyric.currentLyricIndex = 0;
 }
+
+/**
+ * @description: 播放上一首歌曲
+ * @return {*}
+ */
+export const playPreIndex = () => {
+  const musicStore = useMusicStore();
+  // 顺序播放
+  if (musicStore.player.playType == 0) {
+    musicStore.player.currentMusicIndex--;
+    if (musicStore.player.currentMusicIndex < 0) {
+      musicStore.player.currentMusicIndex += musicStore.musicList.length;
+    }
+  }
+  // 随机播放
+  else if (musicStore.player.playType == 1) {
+    musicStore.player.currentMusicIndex = parseInt(
+      Math.random() * musicStore.musicList.length
+    );
+  }
+  // 循环播放
+  else {
+    // 不做处理
+  }
+  playMusic(musicStore.musicList[musicStore.player.currentMusicIndex].id);
+};
+
+/**
+ * @description: 播放下一首歌曲
+ * @return {*}
+ */
+export const playNextIndex = () => {
+  const musicStore = useMusicStore();
+  // 顺序播放
+  if (musicStore.player.playType == 0) {
+    musicStore.player.currentMusicIndex++;
+    if (musicStore.player.currentMusicIndex >= musicStore.musicList.length) {
+      musicStore.player.currentMusicIndex -= musicStore.musicList.length;
+    }
+  }
+  // 随机播放
+  else if (musicStore.player.playType == 1) {
+    musicStore.player.currentMusicIndex = parseInt(
+      Math.random() * musicStore.musicList.length
+    );
+  }
+  // 循环播放
+  else {
+    // 不做处理
+  }
+
+  playMusic(musicStore.musicList[musicStore.player.currentMusicIndex].id);
+};
