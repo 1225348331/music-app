@@ -12,29 +12,31 @@ import {
   MenuOpenRound,
   HeadsetRound,
 } from "@vicons/material";
-/* api */
-import { getSongUrl, getLyric, lyricParser } from "@/api/cover.js";
-import { formatTime } from "@/utils/time-utils";
+
+/* 工具类 */
+import { playMusic } from "@/utils/play-utils";
+import { formatTime, playPreIndex, playNextIndex } from "@/utils/utils";
 
 const musicStore = useMusicStore();
-const drawerShow = ref(false);
 const notification = useNotification();
+// 抽屉显隐控制
+const drawerShow = ref(false);
 
-const changeIndex = (isNext) => {
-  if (musicStore.player.sequence) {
-    if (isNext) {
-      musicStore.player.currentMusicIndex++;
-    } else {
-      musicStore.player.currentMusicIndex--;
-    }
-  } else {
-    musicStore.player.currentMusicIndex = parseInt(Math.random() * 100);
-  }
-};
+// watch(
+//   () => musicStore.currentMusicInfo.id,
+//   (val) => {
+//     console.log("当前播放歌曲为：" + val);
+//     // playMusic(musicStore.musicList[val].id);
+//   }
+// );
 
+// 进度条拖拽
 const handleUpdateValue = (value) => {
-  musicStore.audioPlayer.seek(value)
-
+  musicStore.audioPlayer.seek(value);
+};
+// 格式化tooltip
+const formatTooltip = (value) => {
+  return formatTime(value);
 };
 </script>
 <template>
@@ -47,10 +49,18 @@ const handleUpdateValue = (value) => {
         :max="musicStore.progress.max"
         :step="0.01"
         @update:value="handleUpdateValue"
+        :format-tooltip="formatTooltip"
       >
         <template #thumb>
           <n-icon-wrapper color="#f55e55" :size="18" :border-radius="9">
-            <n-icon :size="12" :component="HeadsetRound" />
+            <n-icon
+              :size="12"
+              v-show="musicStore.progress.value"
+              :component="HeadsetRound"
+            />
+            <n-icon :size="12" v-show="!musicStore.progress.value">
+              <div class="loading"></div>
+            </n-icon>
           </n-icon-wrapper>
         </template>
       </n-slider>
@@ -58,6 +68,7 @@ const handleUpdateValue = (value) => {
     </div>
     <!-- 歌曲信息 -->
     <div class="info">
+      <!-- 左侧信息 -->
       <div class="left">
         <div class="img">
           <img
@@ -82,12 +93,13 @@ const handleUpdateValue = (value) => {
           }}
         </div>
       </div>
+      <!-- 中间按钮 -->
       <div class="center">
         <n-icon
           size="35"
           color="rgb(245, 94, 85)"
           :component="SkipPreviousRound"
-          @click="changeIndex(false)"
+          @click="playPreIndex"
         ></n-icon>
         <n-icon
           size="47"
@@ -107,9 +119,10 @@ const handleUpdateValue = (value) => {
           size="35"
           color="rgb(245, 94, 85)"
           :component="SkipNextRound"
-          @click="changeIndex(true)"
+          @click="playNextIndex"
         ></n-icon>
       </div>
+      <!-- 右侧功能 -->
       <div class="right">
         <n-icon
           size="30"
@@ -255,6 +268,22 @@ const handleUpdateValue = (value) => {
         cursor: pointer;
       }
     }
+  }
+}
+
+.loading {
+  border: 3px solid #f55e55;
+  border-top-color: #fff;
+  border-radius: 50%;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 </style>

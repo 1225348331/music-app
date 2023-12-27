@@ -1,4 +1,4 @@
-import request from "@/utils/utils.js";
+import request from "@/utils/request.js";
 import useMusicStore from "@/store/music.js";
 
 /**
@@ -8,8 +8,8 @@ import useMusicStore from "@/store/music.js";
  */
 export async function getMusicList(id) {
   const res = await request({
-    url: `/playlist/track/all?id=${id}&limit=100&offset=10`,
-    method: "post",
+    url: `/playlist/track/all?id=${id}&limit=100&offset=0`,
+    method: "get",
   });
 
   let list = [];

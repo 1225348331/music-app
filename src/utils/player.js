@@ -20,7 +20,7 @@ class player {
     });
     // 首次加载事件
     player?.once("load", () => {
-      musicStore.progress.value = 0;
+      // 设置进度条最大时长
       musicStore.progress.max = _this.getDurationTime();
       console.log("load被触发了");
     });
@@ -56,7 +56,6 @@ class player {
     player?.on("playerror", () => {});
     player.play();
     console.log(player);
-    // _this.player = player;
     window.player = player;
   }
   getCurrentTime() {

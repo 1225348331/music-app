@@ -43,14 +43,17 @@ const router = createRouter({
 router.beforeEach((to, from) => {
   let cookie = localStorage.getItem("music-cookie");
   if (!cookie) {
-    ElNotification({
-      title: "尚未登录",
-      message: `您尚未登录，请登录后重试~`,
-      type: "success",
-    });
-    return {
-      name: "login",
-    };
+    if (to.name != "login") {
+      ElNotification({
+        title: "尚未登录",
+        message: `您尚未登录，请登录后重试~`,
+        type: "success",
+      });
+      console.log(to);
+      return {
+        name: "login",
+      };
+    }
   } else {
     return true;
   }

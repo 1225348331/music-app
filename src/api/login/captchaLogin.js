@@ -1,4 +1,4 @@
-import request from "@/utils/utils.js";
+import request from "@/utils/request.js";
 
 /**
  * @description: 发送验证码

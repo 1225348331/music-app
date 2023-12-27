@@ -15,7 +15,7 @@ export default defineConfig({
     port: "3000",
     proxy: {
       "/api": {
-        target: "http://localhost:3003/",
+        target: "https://musicapi.jiangyuhui.top/",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""), // 不可以省略rewrite
       },

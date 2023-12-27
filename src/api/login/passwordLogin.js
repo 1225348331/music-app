@@ -1,4 +1,4 @@
-import request from "@/utils/utils.js";
+import request from "@/utils/request.js";
 import { ElNotification } from "element-plus";
 
 // 手机密码登录
@@ -14,10 +14,10 @@ export async function login() {
       url: `/login/cellphone`,
       method: "get",
       params: {
-        // phone: "15951605681",
-        // password: "jyh831928",
-        phone: "17712280112",
-        password: "Smq@123+",
+        phone: "15951605681",
+        password: "jyh831928",
+        // phone: "17712280112",
+        // password: "Smq@123+",
       },
     });
     if (res.data.code != 200) {

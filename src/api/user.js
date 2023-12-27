@@ -1,4 +1,4 @@
-import request from "@/utils/utils.js";
+import request from "@/utils/request.js";
 
 /**
  * @description: 获取用户详情

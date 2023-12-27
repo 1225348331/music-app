@@ -98,7 +98,7 @@ onMounted(() => {});
               :options="menuOptions"
             />
           </div>
-          <div class="right">33</div>
+          <div class="right">登录</div>
         </n-space>
         <n-scrollbar class="body" style="max-height: calc(100vh - 130px)">
           <div class="main">

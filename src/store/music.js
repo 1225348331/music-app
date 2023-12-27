@@ -12,13 +12,15 @@ const useMusicStore = defineStore("musicStore", {
       // 播放 / 暂停
       isPlay: false,
       // 当前播放音乐在音乐列表中的索引
-      currentMusicIndex: 0,
+      currentMusicIndex: -1,
+      // 顺序播放 / 随机播放 / 循环播放
+      playType: 0,
     },
     // 进度条参数
     progress: {
       min: 0,
       max: 400,
-      value: 0
+      value: 0,
     },
     // 歌单
     musicList: [],
