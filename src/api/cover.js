@@ -35,8 +35,10 @@ export async function getSongUrl(id) {
     url: `/song/url?id=${id}`,
     method: "get",
   });
+  console.log(res.data)
   let url = res.data.data[0].url;
-  if (!url.includes("https")) url = url.split("http").join("https");
+  if (!url?.includes("https")) url = url?.split("http").join("https");
+  console.log(url)
   return url;
 }
 

@@ -27,10 +27,10 @@ const useMusicStore = defineStore("musicStore", {
     // 当前播放音乐信息
     currentMusicInfo: {
       id: "",
-      name: "",
-      artist: "",
+      name: "请选择歌曲~",
+      artist: "请选择歌曲~",
       url: "",
-      pic: "",
+      pic: "/src/assets/image/1.jpg",
       lyric: [],
     },
     // 歌词

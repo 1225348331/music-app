@@ -4,10 +4,15 @@
   user-select: none !important;
 }
 
-body{
+body {
   height: 100vh;
 }
-/* @font-face {
-  font-family: "myfont-4";
-  src: url(@/assets/font/4.woff);
-} */
+
+@font-face {
+  font-family: "myfont-1";
+  src: url(@/assets/font/1.woff);
+}
+@font-face {
+  font-family: "myfont-2";
+  src: url(@/assets/font/3500.woff);
+}

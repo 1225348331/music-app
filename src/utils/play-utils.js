@@ -6,6 +6,8 @@ import useMusicStore from "@/store/music";
  * @return {*}
  */
 export async function playMusicList(id) {
+    // 重置播放器信息
+  resetPlayInfo();
   let musicStore = useMusicStore();
   // 获取歌单列表
   musicStore.musicList = await getMusicList(id);

@@ -12,15 +12,21 @@ import {
   MenuOpenRound,
   HeadsetRound,
 } from "@vicons/material";
-
+/* elementplus */
+import "element-plus/es/components/dialog/style/css";
+import { ElDialog } from "element-plus";
 /* 工具类 */
-import { playPreIndex, playNextIndex } from "@/utils/play-utils";
+import { playPreIndex, playNextIndex, playMusic } from "@/utils/play-utils";
 import { formatTime } from "@/utils/utils";
+/* 组件 */
+import BigPlayer from "./BigPlayer.vue";
 
 const musicStore = useMusicStore();
 const notification = useNotification();
 // 抽屉显隐控制
 const drawerShow = ref(false);
+// 大屏播放器
+const dialogVisible = ref(false);
 
 // 进度条拖拽
 const handleUpdateValue = (value) => {
@@ -29,6 +35,19 @@ const handleUpdateValue = (value) => {
 // 格式化tooltip
 const formatTooltip = (value) => {
   return formatTime(value);
+};
+// 大屏播放
+const openBigPlayDialog = () => {
+  dialogVisible.value = true;
+};
+// 关闭大屏
+const closeBigPlayDialog = () => {
+  dialogVisible.value = false;
+};
+// 播放音乐
+const playSong = (index, id) => {
+  musicStore.player.currentMusicIndex = index;
+  playMusic(id);
 };
 </script>
 <template>
@@ -62,7 +81,7 @@ const formatTooltip = (value) => {
     <div class="info">
       <!-- 左侧信息 -->
       <div class="left">
-        <div class="img">
+        <div class="img" @click="openBigPlayDialog">
           <img
             v-show="musicStore.currentMusicInfo.pic"
             :src="musicStore.currentMusicInfo.pic"
@@ -126,21 +145,28 @@ const formatTooltip = (value) => {
     </div>
     <n-drawer v-model:show="drawerShow" :width="400">
       <n-drawer-content title="当前歌单列表" :native-scrollbar="false">
-        <n-card
-          :style="{
-            borderRadius: '8px',
-            cursor: 'pointer',
-            marginBottom: '12px',
-          }"
+        <div
           class="songCard"
           v-for="(item, index) in musicStore.musicList"
+          @click="playSong(index, item.id)"
+          :class="
+            item.id == musicStore.currentMusicInfo.id ? 'currentMusic' : ''
+          "
         >
-          <span>{{ index }}</span>
-          <span>{{ item.name }}</span>
-          <span>{{ item.artist }}</span>
-        </n-card>
+          <span style="width: 7%">{{ index }}</span>
+          <span style="width: 75%">{{ item.name }}</span>
+          <span style="width: 18%">{{ item.artist }}</span>
+        </div>
       </n-drawer-content>
     </n-drawer>
+    <el-dialog
+      class="bigPlayer-dialog"
+      v-model="dialogVisible"
+      fullscreen
+      append-to-body
+    >
+      <BigPlayer :closeBigPlayDialog="closeBigPlayDialog" />
+    </el-dialog>
   </div>
 </template>
 <style lang="scss">
@@ -271,6 +297,43 @@ const formatTooltip = (value) => {
   height: 100%;
   box-sizing: border-box;
   animation: spin 1s linear infinite;
+}
+
+.bigPlayer-dialog {
+  .el-dialog__header {
+    display: none;
+  }
+
+  .el-dialog__body {
+    padding: 0px;
+  }
+}
+
+.songCard {
+  margin-bottom: 12px;
+  padding: 4px;
+  height: 30px;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  &:hover {
+    color: #f55e55;
+  }
+
+  span {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    margin: 0px 5px;
+  }
+}
+
+.currentMusic {
+  border-radius: 8px;
+  border: 1px dashed #f55e55;
+  color: #f55e55;
 }
 
 @keyframes spin {

@@ -86,7 +86,11 @@ onMounted(() => {});
 <template>
   <n-notification-provider :max="3">
     <n-config-provider :theme-overrides="themeOverrides">
-      <div style="height: 100vh; background-color: rgb(250, 250, 252)">
+      <div
+        class="main-body"
+        style="height: 100vh; background-color: rgb(250, 250, 252)"
+      >
+        <!-- 头部导航栏 -->
         <n-space class="header" justify="space-around" size="large">
           <div class="left">
             <div class="logo"></div>
@@ -100,6 +104,7 @@ onMounted(() => {});
           </div>
           <div class="right">登录</div>
         </n-space>
+        <!-- 中间路由 -->
         <n-scrollbar class="body" style="max-height: calc(100vh - 130px)">
           <div class="main">
             <router-view v-slot="{ Component }">
@@ -111,6 +116,7 @@ onMounted(() => {});
             </router-view>
           </div>
         </n-scrollbar>
+        <!-- 底部播放器 -->
         <div class="musicPlayer">
           <Player />
         </div>
@@ -118,38 +124,40 @@ onMounted(() => {});
     </n-config-provider>
   </n-notification-provider>
 </template>
-<style lang="scss" scoped>
-.n-space {
-  margin: 0 auto;
-  height: 60px;
-  line-height: 60px;
-  box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.1);
-  font-weight: bold;
-  align-items: center;
-  background-color: #fff;
+<style lang="scss">
+.main-body {
+  .n-space {
+    margin: 0 auto;
+    height: 60px;
+    line-height: 60px;
+    box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    align-items: center;
+    background-color: #fff;
 
-  .left {
-    .logo {
-      width: 30px;
-      height: 30px;
-      background: url("@/assets/image/favicon.png");
-      background-size: 100%;
-      background-repeat: no-repeat;
+    .left {
+      .logo {
+        width: 30px;
+        height: 30px;
+        background: url("@/assets/image/favicon.png");
+        background-size: 100%;
+        background-repeat: no-repeat;
+      }
     }
   }
-}
-.n-scrollbar {
-  .main {
-    margin: 0 auto;
-    max-width: 1510px;
-    padding-top: 25px;
-    padding-bottom: 25px;
+  .n-scrollbar {
+    .main {
+      margin: 0 auto;
+      max-width: 1510px;
+      padding-top: 25px;
+      padding-bottom: 25px;
+    }
   }
-}
 
-.musicPlayer {
-  box-sizing: border-box;
-  height: 70px;
+  .musicPlayer {
+    box-sizing: border-box;
+    height: 70px;
+  }
 }
 
 /* 路由跳转动画 */
