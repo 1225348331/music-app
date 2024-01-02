@@ -1,4 +1,5 @@
 import request from "@/utils/request.js";
+import { ElNotification } from "element-plus";
 
 /**
  * @description: 发送验证码
@@ -61,55 +62,6 @@ export async function phoneLogin(phoneData) {
     });
     localStorage.setItem("music-cookie", res.data.cookie);
   }
-}
-
-/**
- * @description: 检查二维码状态
- * @return {*}
- */
-async function checkqrStatus(key) {
-  const res = await request({
-    url: "/login/qr/check",
-    params: {
-      key: key,
-      noCookie: true,
-    },
-  });
-  return res.data;
-}
-
-export async function qrLogin() {
-  let timer;
-
-  // 二维码key生成接口
-  const res = await request({
-    method: "get",
-    url: `/login/qr/key`,
-  });
-  const key = res.data.data.unikey;
-  // 二维码生成接口
-  const res2 = await request({
-    url: `/login/qr/creat`,
-    method: "get",
-    params: {
-      key: key,
-      qrimg: true,
-    },
-  });
-
-  // res2.data.data.qrimg
-
-  timer = setInterval(async () => {
-    const statusRes = await checkStatus(key);
-    if (statusRes.code === 800) {
-      alert("二维码已经过期,请重新获取");
-      clearInterval(timer);
-    }
-    if (statusRes.code === 803) {
-      clearInterval(timer);
-      localStorage.setItem("music-cookie", statusRes.cookie);
-    }
-  }, 3000);
 }
 
 export async function loginOut(){

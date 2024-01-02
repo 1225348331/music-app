@@ -1,44 +1,40 @@
 import request from "@/utils/request.js";
+import { useRouter } from "vue-router";
 import { ElNotification } from "element-plus";
 
 // 手机密码登录
 export async function login() {
   // 1467776391 苏淼琪id
   // 344515582  蒋钰辉id
-  // 获取登录状态
-  let userId = await getLoginStatus();
-  // let userId = 344515582
-  if (userId != "344515582") {
-    console.log("账号正在重新登录~");
-    const res = await request({
-      url: `/login/cellphone`,
-      method: "get",
-      params: {
-        phone: "15951605681",
-        password: "jyh831928",
-        // phone: "17712280112",
-        // password: "Smq@123+",
-      },
+
+  const res = await request({
+    url: `/login/cellphone`,
+    method: "get",
+    params: {
+      phone: "15951605681",
+      password: "jyh831928",
+      // phone: "17712280112",
+      // password: "Smq@123+",
+      noCookie: true,
+    },
+  });
+  if (res.data.code == 200) {
+    ElNotification({
+      title: "登录成功啦~",
+      message: "欢迎来到八月小辉辉的音乐库",
+      type: "success",
     });
-    if (res.data.code != 200) {
-      ElNotification({
-        title: "可恶,登录失败啦",
-        message: `接口可能出现问题啦,code为${res.data.code}`,
-        type: "error",
-      });
-    } else {
-      ElNotification({
-        title: "登录成功啦~",
-        message: "欢迎首次登录",
-        type: "success",
-      });
-    }
     localStorage.setItem("music-cookie", res.data.cookie);
-    await getLoginStatus();
+    // 登录成功跳转至首页
+    const router = useRouter();
+    router.push({
+      name: "home",
+    });
   } else {
     ElNotification({
-      title: "再次登录成功啦~",
-      type: "success",
+      title: "可恶,登录失败啦",
+      message: `登录接口可能出现问题啦,code为${res.data.code}`,
+      type: "error",
     });
   }
 }

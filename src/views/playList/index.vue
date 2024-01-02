@@ -1,13 +1,10 @@
 <script setup>
-import { computed, onBeforeMount, onMounted, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { getUserPlaylist } from "@/api/user.js";
-import { getMusicList } from "@/api/cover.js";
-import useMusicStore from "@/store/music.js";
 import useMainStore from "@/store/index.js";
 import { HeadsetRound } from "@vicons/material";
 import { playMusicList } from "@/utils/play-utils";
 
-const musicStore = useMusicStore();
 const mainStore = useMainStore();
 
 // 总歌曲
@@ -19,6 +16,7 @@ const playCover = async (cover) => {
 };
 
 onMounted(async () => {
+  // 获取用户歌单
   let playlistRes = await getUserPlaylist(mainStore.userData.id);
   allCoverList.value = playlistRes.playlist;
 });
@@ -64,7 +62,6 @@ onMounted(async () => {
       box-shadow: 10px 0px 10px 3px rgb(0, 0, 0, 0.3);
       overflow: hidden;
       position: relative;
-
 
       .playCount {
         position: absolute;

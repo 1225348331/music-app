@@ -9,13 +9,15 @@ let routes = [
   {
     path: "/",
     name: "home",
-    component: () => import("@/views/playList/index.vue"),
+    // component: () => import("@/views/playList/index.vue"),
+    component: () => import("@/views/Home/index.vue"),
     beforeEnter: async (to, from) => {
       const userStore = useMainStore();
       if (!userStore.userData.id) {
         let res = await getUserAccount();
-        console.log(res)
+        console.log(res);
         userStore.userData.avatarUrl = res.profile.avatarUrl;
+        userStore.userData.backgroundUrl = res.profile.backgroundUrl;
         userStore.userData.name = res.profile.nickname;
         userStore.userData.id = res.profile.userId;
       }
@@ -41,6 +43,7 @@ const router = createRouter({
   routes,
 });
 
+// 检验是否登录
 router.beforeEach((to, from) => {
   let cookie = localStorage.getItem("music-cookie");
   if (!cookie) {
@@ -48,9 +51,9 @@ router.beforeEach((to, from) => {
       ElNotification({
         title: "尚未登录",
         message: `您尚未登录，请登录后重试~`,
-        type: "success",
+        type: "error",
       });
-      console.log(to);
+      // 重定向到登录界面
       return {
         name: "login",
       };

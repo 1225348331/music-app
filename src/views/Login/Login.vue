@@ -3,13 +3,19 @@ import qrLogin from "@/components/login/qrLogin.vue";
 import captchaLogin from "@/components/login/captchaLogin.vue";
 import passwordLogin from "@/components/login/passwordLogin.vue";
 import { login } from "@/api/login/passwordLogin";
+import { onMounted } from "vue";
 
-login()
+
+onMounted(() => {
+
+})
+
+// login()
 </script>
 <template>
   <div class="login">
     <div class="logo"></div>
-    <div class="title">登录PlayerMusic</div>
+    <div class="title">登录八月小辉辉的Music</div>
     <n-tabs
       animated
       justify-content="space-evenly"
@@ -28,7 +34,7 @@ login()
       <n-tab-pane name="phone" tab="验证码登录">
         <captchaLogin />
       </n-tab-pane>
-      <n-tab-pane name="email" tab="邮箱登录">
+      <n-tab-pane name="email" tab="密码登录">
         <passwordLogin />
       </n-tab-pane>
     </n-tabs>
@@ -59,20 +65,6 @@ login()
   }
   .n-tabs {
     width: 50%;
-    .qr-img {
-      width: 220px;
-      height: 220px;
-      border-radius: 8px;
-      background-color: #fff;
-      :deep(.n-card__content) {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        .n-skeleton {
-          border-radius: 8px;
-        }
-      }
-    }
   }
 }
 </style>

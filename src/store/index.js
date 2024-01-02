@@ -8,6 +8,7 @@ const mainStore = defineStore("mainStore", {
         id: "", // 用户uid
         name: "", // 用户昵称
         avatarUrl: "", // 用户头像
+        backgroundUrl:''// 用户主页背景
       },
     };
   },

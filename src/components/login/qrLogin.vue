@@ -1,26 +1,42 @@
 <script setup>
-import { ref } from "vue";
-// 二维码
-import QrcodeVue from "qrcode.vue";
+import { onMounted, ref } from "vue";
+import { qrLogin } from "@/api/login/qrLogin";
 // 二维码数据
 const qrImg = ref(null);
+
+onMounted(async () => {
+  qrImg.value = await qrLogin();
+});
 </script>
 <template>
-  <n-card class="qr-img">
+  <div class="qr-img">
     <n-skeleton
       v-if="!qrImg"
-      style="min-width: 180px"
-      height="180px"
-      width="180px"
+      style="min-width: 200px"
+      height="200px"
+      width="200px"
     />
-    <QrcodeVue
-      v-else
-      class="qr"
-      :value="qrImg"
-      :size="180"
-      level="H"
-      background="#00000000"
+    <n-image
+      width="230"
+      height="230"
+      v-if="qrImg"
+      :src="qrImg"
+      preview-disabled
     />
-  </n-card>
+  </div>
 </template>
-<style lang="scss" scoped></style>
+<style lang="scss">
+.qr-img {
+  width: 230px;
+  height: 230px;
+  border-radius: 10px;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .n-skeleton {
+    border-radius: 10px;
+  }
+}
+</style>

@@ -29,7 +29,6 @@ export async function getUserPlaylist(uid, limit = 30, offset = 0) {
       offset,
     },
   });
-  console.log(res.data)
   return res.data;
 }
 
