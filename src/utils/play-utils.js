@@ -14,7 +14,7 @@ export async function playMusicList(id) {
   // 设置歌曲索引
   musicStore.player.currentMusicIndex = 0;
   // 播放音乐列表第一首
-  playMusic(musicStore.musicList[0].id);
+  playMusic(musicStore.musicList[0]);
 }
 
 /**
@@ -22,15 +22,15 @@ export async function playMusicList(id) {
  * @param {*} id
  * @return {*}
  */
-export async function playMusic(id) {
+export async function playMusic(song) {
   // 重置播放器信息
   resetPlayInfo();
   // 设置音乐基础信息
-  setMusicInfo();
+  setMusicInfo(song);
   // 设置歌词
-  await setLyric(id);
+  await setLyric(song.id);
   // 播放歌曲
-  await playSong(id);
+  await playSong(song.id);
 }
 
 /**
@@ -65,15 +65,13 @@ export async function setLyric(id) {
  * @description: 设置音乐基础信息
  * @return {*}
  */
-export async function setMusicInfo() {
+export async function setMusicInfo(song) {
   let musicStore = useMusicStore();
-  let index = musicStore.player.currentMusicIndex;
-  let list = musicStore.musicList;
-
-  musicStore.currentMusicInfo.id = list[index].id;
-  musicStore.currentMusicInfo.name = list[index].name;
-  musicStore.currentMusicInfo.artist = list[index].artist;
-  musicStore.currentMusicInfo.pic = list[index].pic + "?param=700y700";
+  musicStore.currentMusicInfo.id = song.id;
+  musicStore.currentMusicInfo.name = song.name;
+  musicStore.currentMusicInfo.artist = song.artist;
+  musicStore.currentMusicInfo.pic = song.pic;
+  
 }
 
 /**
@@ -147,7 +145,7 @@ export const playPreIndex = () => {
   else {
     // 不做处理
   }
-  playMusic(musicStore.musicList[musicStore.player.currentMusicIndex].id);
+  playMusic(musicStore.musicList[musicStore.player.currentMusicIndex]);
 };
 
 /**
@@ -174,5 +172,5 @@ export const playNextIndex = () => {
     // 不做处理
   }
 
-  playMusic(musicStore.musicList[musicStore.player.currentMusicIndex].id);
+  playMusic(musicStore.musicList[musicStore.player.currentMusicIndex]);
 };

@@ -18,7 +18,7 @@ export async function getMusicList(id) {
       id: item.id,
       name: item.name,
       artist: item.ar[0].name,
-      pic: item.al.picUrl,
+      pic: item.al.picUrl + "?param=700y700",
     });
   });
 
@@ -35,10 +35,10 @@ export async function getSongUrl(id) {
     url: `/song/url?id=${id}`,
     method: "get",
   });
-  console.log(res.data)
+  console.log(res.data);
   let url = res.data.data[0].url;
   if (!url?.includes("https")) url = url?.split("http").join("https");
-  console.log(url)
+  console.log(url);
   return url;
 }
 
@@ -89,4 +89,27 @@ export function lyricParser(lrcGet) {
     });
   });
   return lrcArray;
+}
+
+/**
+ * @description: 获取每日推荐歌曲
+ * @return {*}
+ */
+export async function getRecommendSongs() {
+  const res = await request({
+    url: `/recommend/songs`,
+    method: "get",
+  });
+  let data = res.data.data.dailySongs;
+  let dailySongs = [];
+  data.forEach((item) => {
+    dailySongs.push({
+      id: item.id,
+      name: item.name,
+      pic: item.al.picUrl + "?param=50y50",
+      artist: item.ar[0].name,
+    });
+  });
+
+  return dailySongs;
 }

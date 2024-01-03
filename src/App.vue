@@ -126,6 +126,8 @@ onMounted(() => {});
 </template>
 <style lang="scss">
 .main-body {
+  // background-image: linear-gradient(-20deg, #e9defa 0%, #fbfcdb 100%);
+  background-image: linear-gradient(60deg, #abecd6 0%, #fbed96 100%);
   .n-space {
     margin: 0 auto;
     height: 60px;
@@ -133,7 +135,7 @@ onMounted(() => {});
     box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.1);
     font-weight: bold;
     align-items: center;
-    background-color: #fff;
+    // background-color: #fff;
 
     .left {
       .logo {

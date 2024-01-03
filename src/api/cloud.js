@@ -6,7 +6,7 @@ import request from "@/utils/request.js";
  * @param {*} offset - 偏移数量，默认0
  * @return {*}
  */
-export async function getUserCloud(limit = 30, offset = 0) {
+export async function getUserCloud(limit = 691, offset = 0) {
   const res = await request({
     url: `/user/cloud`,
     method: "get",
@@ -15,5 +15,6 @@ export async function getUserCloud(limit = 30, offset = 0) {
       offset,
     },
   });
+  console.log(res.data)
   return res.data;
 }

@@ -2,10 +2,15 @@
 import { computed, onMounted, ref } from "vue";
 import { getUserPlaylist } from "@/api/user.js";
 import useMainStore from "@/store/index.js";
-import { playMusicList } from "@/utils/play-utils";
+import useMusicStore from "@/store/music.js";
+import { playMusicList, playMusic } from "@/utils/play-utils";
+import { getRecommendSongs } from "@/api/cover";
 
 const mainStore = useMainStore();
+const musicStore = useMusicStore();
 
+// 每日推荐
+const dailyRecommend = ref([]);
 // 全部歌单
 const allCoverList = ref([]);
 // 收藏的歌单
@@ -21,26 +26,44 @@ const createCoverList = computed(() => {
   });
 });
 // 播放歌单
-const playCover = async (cover) => {
+const playCover = (cover) => {
   playMusicList(cover.id);
+};
+
+// 播放歌单中的单曲
+const playCoverSong = (song, index) => {
+  // 如果当前歌单列表不是当前歌单，则替换歌单列表
+  if (musicStore.musicList != dailyRecommend.value) {
+    musicStore.musicList = dailyRecommend.value;
+  }
+  musicStore.player.currentMusicIndex = index;
+  playMusic(song);
 };
 
 onMounted(async () => {
   let playlistRes = await getUserPlaylist(mainStore.userData.id);
   allCoverList.value = playlistRes.playlist;
+
+  dailyRecommend.value = await getRecommendSongs();
 });
 </script>
 <template>
   <div class="home">
     <div class="myPage coverList">
-      <img
-        class="bg"
-        :style="{
-          backgroundImage: `url(${mainStore.userData.backgroundUrl})`,
-        }"
-      >
-      <div class="userInfo"></div>
-      <div class="favoriteList"></div>
+      <n-scrollbar class="body" style="max-height: 80vh">
+        <div class="userCover">{{ mainStore.userData.name }}的每日推荐歌曲</div>
+        <div
+          class="cover"
+          v-for="(item, index) in dailyRecommend"
+          @click="playCoverSong(item, index)"
+        >
+          <div>
+            <img class="coverImg" :src="item.pic" alt="" />
+          </div>
+          <div class="coverName">{{ item.name }}</div>
+          <div class="coverArtist">{{ item.artist }}</div>
+        </div>
+      </n-scrollbar>
     </div>
     <!-- 创建的歌单 -->
     <div class="coverList">
@@ -118,19 +141,13 @@ onMounted(async () => {
         .coverName {
           padding-left: 20px;
           text-align: left;
+          flex-grow: 1;
+        }
+        .coverArtist {
+          padding-left: 20px;
+          text-align: right;
         }
       }
-    }
-  }
-
-  .myPage {
-    .bg {
-      border-radius: 13px 13px 0px 0px;
-      width: 100%;
-      height: 35%;
-      background-size: 100%;
-      background-repeat: no-repeat;
-      background-position: 50%;
     }
   }
 }

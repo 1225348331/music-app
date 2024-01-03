@@ -45,9 +45,9 @@ const closeBigPlayDialog = () => {
   dialogVisible.value = false;
 };
 // 播放音乐
-const playSong = (index, id) => {
+const playSong = (index, item) => {
   musicStore.player.currentMusicIndex = index;
-  playMusic(id);
+  playMusic(item);
 };
 </script>
 <template>
@@ -148,7 +148,7 @@ const playSong = (index, id) => {
         <div
           class="songCard"
           v-for="(item, index) in musicStore.musicList"
-          @click="playSong(index, item.id)"
+          @click="playSong(index, item)"
           :class="
             item.id == musicStore.currentMusicInfo.id ? 'currentMusic' : ''
           "

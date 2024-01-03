@@ -20,6 +20,7 @@ let routes = [
         userStore.userData.backgroundUrl = res.profile.backgroundUrl;
         userStore.userData.name = res.profile.nickname;
         userStore.userData.id = res.profile.userId;
+        userStore.userData.signature = res.profile.signature;
       }
       // reject the navigation
       return true;
@@ -33,7 +34,7 @@ let routes = [
   {
     path: "/test",
     name: "test",
-    component: () => import("@/views/Test.vue"),
+    component: () => import("@/views/Cloud/index.vue"),
   },
 ];
 
