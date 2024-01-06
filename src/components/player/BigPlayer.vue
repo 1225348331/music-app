@@ -47,7 +47,7 @@ onMounted(() => {
 <template>
   <div
     class="music-app"
-    :style="{ '--bg-img': `url(${musicStore.currentMusicInfo.pic})` }"
+    :style="{ '--bg-img': `url(${musicStore.currentMusicInfo.pic} + ?param=700y700)` }"
   >
     <div
       class="left"

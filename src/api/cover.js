@@ -18,7 +18,7 @@ export async function getMusicList(id) {
       id: item.id,
       name: item.name,
       artist: item.ar[0].name,
-      pic: item.al.picUrl + "?param=700y700",
+      pic: item.al.picUrl,
     });
   });
 
@@ -106,7 +106,7 @@ export async function getRecommendSongs() {
     dailySongs.push({
       id: item.id,
       name: item.name,
-      pic: item.al.picUrl + "?param=50y50",
+      pic: item.al.picUrl,
       artist: item.ar[0].name,
     });
   });

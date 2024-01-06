@@ -84,7 +84,7 @@ const playSong = (index, item) => {
         <div class="img" @click="openBigPlayDialog">
           <img
             v-show="musicStore.currentMusicInfo.pic"
-            :src="musicStore.currentMusicInfo.pic"
+            :src="musicStore.currentMusicInfo.pic + '?param=50y50'"
             alt=""
           />
         </div>

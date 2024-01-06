@@ -58,7 +58,7 @@ onMounted(async () => {
           @click="playCoverSong(item, index)"
         >
           <div>
-            <img class="coverImg" :src="item.pic" alt="" />
+            <img class="coverImg" :src="item.pic + '?param=50y50'" alt="" />
           </div>
           <div class="coverName">{{ item.name }}</div>
           <div class="coverArtist">{{ item.artist }}</div>
@@ -75,7 +75,11 @@ onMounted(async () => {
           @click="playCover(item)"
         >
           <div>
-            <img class="coverImg" :src="item.coverImgUrl" alt="" />
+            <img
+              class="coverImg"
+              :src="item.coverImgUrl + '?param=50y50'"
+              alt=""
+            />
           </div>
           <div class="coverName">{{ item.name }}</div>
         </div>
@@ -91,7 +95,11 @@ onMounted(async () => {
           @click="playCover(item)"
         >
           <div>
-            <img class="coverImg" :src="item.coverImgUrl" alt="" />
+            <img
+              class="coverImg"
+              :src="item.coverImgUrl + '?param=50y50'"
+              alt=""
+            />
           </div>
           <div class="coverName">{{ item.name }}</div>
         </div>
@@ -106,15 +114,14 @@ onMounted(async () => {
   justify-content: space-around;
   align-items: center;
   height: 100%;
+  box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04),
+      0px 8px 20px rgba(0, 0, 0, 0.08);
 
   .coverList {
     height: 78vh;
     width: 32.5%;
     border-radius: 13px;
     margin: 7px 0px;
-    box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04),
-      0px 8px 20px rgba(0, 0, 0, 0.08);
-
     .n-scrollbar {
       --n-scrollbar-width: 0px !important;
       .n-scrollbar-content {
