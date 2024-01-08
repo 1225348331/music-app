@@ -50,8 +50,8 @@ onMounted(async () => {
 <template>
   <div class="home">
     <div class="myPage coverList">
+      <div class="userCover">每日推荐</div>
       <n-scrollbar class="body">
-        <div class="userCover">{{ mainStore.userData.name }}的每日推荐歌曲</div>
         <div
           class="cover"
           v-for="(item, index) in dailyRecommend"
@@ -67,8 +67,8 @@ onMounted(async () => {
     </div>
     <!-- 创建的歌单 -->
     <div class="coverList">
+      <div class="userCover">{{ mainStore.userData.name }}创建的歌单</div>
       <n-scrollbar class="body">
-        <div class="userCover">创建的歌单</div>
         <div
           class="cover"
           v-for="item in createCoverList"
@@ -87,8 +87,8 @@ onMounted(async () => {
     </div>
     <!-- 收藏的歌单 -->
     <div class="coverList">
+      <div class="userCover">{{ mainStore.userData.name }}收藏的歌单</div>
       <n-scrollbar class="body">
-        <div class="userCover">收藏的歌单</div>
         <div
           class="cover"
           v-for="item in collectCoverList"
@@ -110,30 +110,36 @@ onMounted(async () => {
 <style lang="scss">
 .home {
   display: flex;
-  flex-flow: row wrap;
+  flex-flow: row nowrap;
   justify-content: space-around;
-  align-items: center;
+  align-items: flex-start;
   height: 100%;
-  border-radius: 10px;
-
+  width: 100%;
 
   .coverList {
-    height: 85vh;
-    width: 32.5%;
+    height: 86vh;
+    width: 32%;
     border-radius: 13px;
-    margin: 7px 0px;
-    box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04),
-    0px 8px 20px rgba(0, 0, 0, 0.08);
+    margin: 0px 5px;
+    background-color: #fff;
+    box-shadow: 0px 6px 16px 2px rgba(0, 0, 0, 0.04),
+      0px 4px 10px rgba(0, 0, 0, 0.08);
+
+    .userCover {
+      box-sizing: border-box;
+      height: 30px;
+      line-height: 30px;
+      font-size: 18px;
+      margin: 15px 0px 0px 15px;
+      font-weight: bold;
+    }
 
     .n-scrollbar {
-      max-height: 85vh;
+      width: 100%;
+      max-height: calc(100% - 30px);
       --n-scrollbar-width: 0px !important;
       .n-scrollbar-content {
         padding: 15px;
-      }
-      .userCover {
-        font-size: 16px;
-        margin: 5px 0px 15px;
       }
 
       .cover {

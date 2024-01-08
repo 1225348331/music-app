@@ -6,7 +6,13 @@ import { NIcon } from "naive-ui";
 import Player from "@/components/player/player.vue";
 import iconText from "@/components/icon-text.vue";
 import { IosSettings, MdCloudy } from "@vicons/ionicons4";
-import { FavoriteRound,AccountBalanceSharp,AddAPhotoRound,AttachEmailOutlined,CameraTwotone } from "@vicons/material";
+import {
+  FavoriteRound,
+  AccountBalanceSharp,
+  AddAPhotoRound,
+  AttachEmailOutlined,
+  CameraTwotone,
+} from "@vicons/material";
 
 const activeKey = ref("home");
 function renderIcon(icon, color = "#68cb25") {
@@ -64,22 +70,22 @@ const menuOptions = [
     icon: renderIcon(MdCloudy, "#2b88c5"),
   },
   {
-    label: '推荐歌手',
+    label: "推荐歌手",
     key: "推荐歌手",
     icon: renderIcon(AccountBalanceSharp, "#b22c00"),
   },
   {
-    label: '上传音乐',
+    label: "上传音乐",
     key: "上传音乐",
     icon: renderIcon(AddAPhotoRound, "#ff6501"),
   },
   {
-    label: '统计',
+    label: "统计",
     key: "统计",
     icon: renderIcon(AttachEmailOutlined, "#ffb200"),
   },
   {
-    label: '关于',
+    label: "关于",
     key: "关于",
     icon: renderIcon(CameraTwotone, "#eaacff"),
   },
@@ -136,15 +142,13 @@ onMounted(() => {});
           </div>
           <!-- 中间路由 -->
           <n-scrollbar class="body" style="max-height: calc(100vh - 70px)">
-            <div class="main">
-              <router-view v-slot="{ Component }">
-                <Transition name="scale" mode="out-in">
-                  <keep-alive>
-                    <component :is="Component" />
-                  </keep-alive>
-                </Transition>
-              </router-view>
-            </div>
+            <router-view v-slot="{ Component }">
+              <Transition name="scale" mode="out-in">
+                <keep-alive>
+                  <component :is="Component" />
+                </keep-alive>
+              </Transition>
+            </router-view>
           </n-scrollbar>
         </div>
         <!-- 底部播放器 -->
@@ -162,6 +166,7 @@ onMounted(() => {});
   flex-flow: column nowrap;
 
   .main-body {
+    width: 100vw;
     display: flex;
     flex-flow: row nowrap;
     flex-grow: 1;
@@ -169,21 +174,24 @@ onMounted(() => {});
     .left {
       font-weight: bold;
       align-items: center;
+      width: 300px;
+      height: calc(100vh - 70px);
+      background: #fff;
+      border-radius: 0px 10px 10px 0px;
+      box-shadow: -12px -20px 16px 2px rgba(0, 0, 0, 0.04),
+        2px -1px 20px 0px rgba(0, 0, 0, 0.08);
+
       & > div {
-        background: #fff;
-        margin: 15px 5px;
         padding: 15px 0px;
         border-radius: 10px;
         cursor: pointer;
-        box-shadow: 0px 6px 16px 2px rgba(0, 0, 0, 0.04),
-          0px 4px 10px rgba(0, 0, 0, 0.08);
+        width: 100%;
+        // box-shadow: 0px 6px 16px 2px rgba(0, 0, 0, 0.04),
+        //   0px 4px 10px rgba(0, 0, 0, 0.08);
       }
 
       .login {
         text-align: center;
-      }
-      .n-menu {
-        width: 280px;
       }
 
       .functions {
@@ -191,12 +199,13 @@ onMounted(() => {});
       }
     }
 
-    .n-scrollbar {
-      .main {
-        margin: 0 auto;
-        max-width: 1510px;
-        padding-top: 25px;
-        // padding-bottom: 25px;
+    .body {
+      width: calc(100vw - 300px);
+      box-sizing: border-box;
+      --n-scrollbar-width: 0px !important;
+
+      .n-scrollbar-content {
+        padding: 20px;
       }
     }
   }
