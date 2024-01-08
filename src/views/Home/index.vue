@@ -50,7 +50,7 @@ onMounted(async () => {
 <template>
   <div class="home">
     <div class="myPage coverList">
-      <n-scrollbar class="body" style="max-height: 80vh">
+      <n-scrollbar class="body">
         <div class="userCover">{{ mainStore.userData.name }}的每日推荐歌曲</div>
         <div
           class="cover"
@@ -67,7 +67,7 @@ onMounted(async () => {
     </div>
     <!-- 创建的歌单 -->
     <div class="coverList">
-      <n-scrollbar class="body" style="max-height: 80vh">
+      <n-scrollbar class="body">
         <div class="userCover">创建的歌单</div>
         <div
           class="cover"
@@ -87,7 +87,7 @@ onMounted(async () => {
     </div>
     <!-- 收藏的歌单 -->
     <div class="coverList">
-      <n-scrollbar class="body" style="max-height: 80vh">
+      <n-scrollbar class="body">
         <div class="userCover">收藏的歌单</div>
         <div
           class="cover"
@@ -114,15 +114,19 @@ onMounted(async () => {
   justify-content: space-around;
   align-items: center;
   height: 100%;
-  box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04),
-      0px 8px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+
 
   .coverList {
-    height: 78vh;
+    height: 85vh;
     width: 32.5%;
     border-radius: 13px;
     margin: 7px 0px;
+    box-shadow: 0px 12px 32px 4px rgba(0, 0, 0, 0.04),
+    0px 8px 20px rgba(0, 0, 0, 0.08);
+
     .n-scrollbar {
+      max-height: 85vh;
       --n-scrollbar-width: 0px !important;
       .n-scrollbar-content {
         padding: 15px;

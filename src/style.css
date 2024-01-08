@@ -2,6 +2,7 @@
   margin: 0px;
   padding: 0px;
   user-select: none !important;
+  font-family: '灵悦黑体';
 }
 
 body {
@@ -16,3 +17,9 @@ body {
   font-family: "myfont-2";
   src: url(@/assets/font/3500.woff);
 }
+
+@font-face {
+  font-family: "灵悦黑体";
+  src: url(@/assets/font/灵悦黑体.ttf);
+}
+

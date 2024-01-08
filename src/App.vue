@@ -2,10 +2,24 @@
 import { onMounted, h, ref, onBeforeMount } from "vue";
 import "element-plus/es/components/notification/style/css";
 import { RouterLink, useRouter } from "vue-router";
+import { NIcon } from "naive-ui";
 import Player from "@/components/player/player.vue";
+import iconText from "@/components/icon-text.vue";
+import { IosSettings, MdCloudy } from "@vicons/ionicons4";
+import { FavoriteRound,AccountBalanceSharp,AddAPhotoRound,AttachEmailOutlined,CameraTwotone } from "@vicons/material";
 
 const activeKey = ref("home");
-
+function renderIcon(icon, color = "#68cb25") {
+  return () =>
+    h(
+      NIcon,
+      {
+        size: 20,
+        color: color,
+      },
+      { default: () => h(icon) }
+    );
+}
 const menuOptions = [
   {
     label: () =>
@@ -19,6 +33,7 @@ const menuOptions = [
         { default: () => "我的歌单" }
       ),
     key: "home",
+    icon: renderIcon(FavoriteRound, "#f55e55"),
   },
   {
     label: () =>
@@ -32,6 +47,7 @@ const menuOptions = [
         { default: () => "我的喜欢" }
       ),
     key: "login",
+    icon: renderIcon(IosSettings),
   },
   {
     label: () =>
@@ -45,6 +61,27 @@ const menuOptions = [
         { default: () => "我的云盘" }
       ),
     key: "test",
+    icon: renderIcon(MdCloudy, "#2b88c5"),
+  },
+  {
+    label: '推荐歌手',
+    key: "推荐歌手",
+    icon: renderIcon(AccountBalanceSharp, "#b22c00"),
+  },
+  {
+    label: '上传音乐',
+    key: "上传音乐",
+    icon: renderIcon(AddAPhotoRound, "#ff6501"),
+  },
+  {
+    label: '统计',
+    key: "统计",
+    icon: renderIcon(AttachEmailOutlined, "#ffb200"),
+  },
+  {
+    label: '关于',
+    key: "关于",
+    icon: renderIcon(CameraTwotone, "#eaacff"),
   },
 ];
 
@@ -87,35 +124,29 @@ onMounted(() => {});
   <n-notification-provider :max="3">
     <n-config-provider :theme-overrides="themeOverrides">
       <div
-        class="main-body"
+        class="container"
         style="height: 100vh; background-color: rgb(250, 250, 252)"
       >
-        <!-- 头部导航栏 -->
-        <n-space class="header" justify="space-around" size="large">
+        <!-- 菜单 + 路由 -->
+        <div class="main-body">
+          <!-- 左侧导航栏 -->
           <div class="left">
-            <div class="logo"></div>
+            <div class="login">登录</div>
+            <n-menu v-model:value="activeKey" :options="menuOptions" />
           </div>
-          <div class="center">
-            <n-menu
-              v-model:value="activeKey"
-              mode="horizontal"
-              :options="menuOptions"
-            />
-          </div>
-          <div class="right">登录</div>
-        </n-space>
-        <!-- 中间路由 -->
-        <n-scrollbar class="body" style="max-height: calc(100vh - 130px)">
-          <div class="main">
-            <router-view v-slot="{ Component }">
-              <Transition name="scale" mode="out-in">
-                <keep-alive>
-                  <component :is="Component" />
-                </keep-alive>
-              </Transition>
-            </router-view>
-          </div>
-        </n-scrollbar>
+          <!-- 中间路由 -->
+          <n-scrollbar class="body" style="max-height: calc(100vh - 70px)">
+            <div class="main">
+              <router-view v-slot="{ Component }">
+                <Transition name="scale" mode="out-in">
+                  <keep-alive>
+                    <component :is="Component" />
+                  </keep-alive>
+                </Transition>
+              </router-view>
+            </div>
+          </n-scrollbar>
+        </div>
         <!-- 底部播放器 -->
         <div class="musicPlayer">
           <Player />
@@ -125,34 +156,48 @@ onMounted(() => {});
   </n-notification-provider>
 </template>
 <style lang="scss">
-.main-body {
-  // background-image: linear-gradient(-20deg, #e9defa 0%, #fbfcdb 100%);
-  background-image: linear-gradient(60deg, #abecd6 0%, #fbed96 100%);
-  .n-space {
-    margin: 0 auto;
-    height: 60px;
-    line-height: 60px;
-    box-shadow: 0px 1px 1px 0px rgba(0, 0, 0, 0.1);
-    font-weight: bold;
-    align-items: center;
-    // background-color: #fff;
+.container {
+  background-color: #f4f4f5;
+  display: flex;
+  flex-flow: column nowrap;
+
+  .main-body {
+    display: flex;
+    flex-flow: row nowrap;
+    flex-grow: 1;
 
     .left {
-      .logo {
-        width: 30px;
-        height: 30px;
-        background: url("@/assets/image/favicon.png");
-        background-size: 100%;
-        background-repeat: no-repeat;
+      font-weight: bold;
+      align-items: center;
+      & > div {
+        background: #fff;
+        margin: 15px 5px;
+        padding: 15px 0px;
+        border-radius: 10px;
+        cursor: pointer;
+        box-shadow: 0px 6px 16px 2px rgba(0, 0, 0, 0.04),
+          0px 4px 10px rgba(0, 0, 0, 0.08);
+      }
+
+      .login {
+        text-align: center;
+      }
+      .n-menu {
+        width: 280px;
+      }
+
+      .functions {
+        text-align: center;
       }
     }
-  }
-  .n-scrollbar {
-    .main {
-      margin: 0 auto;
-      max-width: 1510px;
-      padding-top: 25px;
-      padding-bottom: 25px;
+
+    .n-scrollbar {
+      .main {
+        margin: 0 auto;
+        max-width: 1510px;
+        padding-top: 25px;
+        // padding-bottom: 25px;
+      }
     }
   }
 
