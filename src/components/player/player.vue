@@ -244,8 +244,6 @@ const playSong = (index, item) => {
       }
 
       .lyric {
-        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
-          sans-serif;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
