@@ -47,10 +47,10 @@ const menuOptions = [
         RouterLink,
         {
           to: {
-            name: "login",
+            name: "cloud",
           },
         },
-        { default: () => "我的喜欢" }
+        { default: () => "我的云盘" }
       ),
     key: "login",
     icon: renderIcon(IosSettings),
@@ -61,10 +61,10 @@ const menuOptions = [
         RouterLink,
         {
           to: {
-            name: "test",
+            name: "login",
           },
         },
-        { default: () => "我的云盘" }
+        { default: () => "登录界面" }
       ),
     key: "test",
     icon: renderIcon(MdCloudy, "#2b88c5"),

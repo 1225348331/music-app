@@ -19,7 +19,7 @@ export async function playMusicList(id) {
 
 /**
  * @description: 播放单曲
- * @param {*} id
+ * @param {*} song {id,name,artist,pic}
  * @return {*}
  */
 export async function playMusic(song) {

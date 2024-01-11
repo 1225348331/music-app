@@ -27,13 +27,15 @@ let routes = [
     },
   },
   {
+    // 登录
     path: "/login",
     name: "login",
     component: () => import("@/views/Login/Login.vue"),
   },
   {
-    path: "/test",
-    name: "test",
+    // 我的云盘
+    path: "/cloud",
+    name: "cloud",
     component: () => import("@/views/Cloud/index.vue"),
   },
 ];

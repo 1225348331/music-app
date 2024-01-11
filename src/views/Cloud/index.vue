@@ -17,14 +17,15 @@ const playCover = async (cover) => {
 };
 
 onMounted(async () => {
-  let data = await getUserCloud();
+  let res = await getUserCloud();
+  console.log(res.data);
   let song = {
-    id: data.data[502].songId,
-    name: data.data[502].songName,
-    artist: data.data[502].artist,
-    pic: data.data[502].simpleSong.al.picUrl,
+    id: res.data[502].songId,
+    name: res.data[502].simpleSong.name,
+    artist: res.data[502].simpleSong.ar[0].name,
+    pic: res.data[502].simpleSong.al.picUrl,
   };
-  await playMusic(song);
+  // await playMusic(song);
   // 获取用户歌单
   // let playlistRes = await getUserPlaylist(mainStore.userData.id);
   // allCoverList.value = playlistRes.playlist;
