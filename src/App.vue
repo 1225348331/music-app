@@ -14,7 +14,7 @@ import {
   CameraTwotone,
 } from "@vicons/material";
 
-const activeKey = ref("home");
+const activeKey = ref("test");
 function renderIcon(icon, color = "#68cb25") {
   return () =>
     h(
@@ -85,8 +85,8 @@ const menuOptions = [
     icon: renderIcon(AttachEmailOutlined, "#ffb200"),
   },
   {
-    label: "关于",
-    key: "关于",
+    label: "关于网站",
+    key: "关于网站",
     icon: renderIcon(CameraTwotone, "#eaacff"),
   },
 ];
@@ -164,6 +164,7 @@ onMounted(() => {});
   background-color: #f4f4f5;
   display: flex;
   flex-flow: column nowrap;
+  font-family: '灵悦黑体';
 
   .main-body {
     width: 100vw;
