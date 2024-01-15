@@ -3,6 +3,11 @@
 import { computed, inject, ref, watch, onMounted } from "vue";
 import useMusicStore from "@/store/music.js";
 import {
+  NSlider,
+  NIcon,
+  NIconWrapper,
+} from "naive-ui";
+import {
   PlayCircleFilled,
   PauseCircleFilledFilled,
   SkipPreviousRound,
@@ -47,7 +52,9 @@ onMounted(() => {
 <template>
   <div
     class="music-app"
-    :style="{ '--bg-img': `url(${musicStore.currentMusicInfo.pic} + ?param=700y700)` }"
+    :style="{
+      '--bg-img': `url(${musicStore.currentMusicInfo.pic} + ?param=700y700)`,
+    }"
   >
     <div
       class="left"

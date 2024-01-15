@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import { qrLogin } from "@/api/login/qrLogin";
+import { NSkeleton,NImage } from "naive-ui";
 // 二维码数据
 const qrImg = ref(null);
 

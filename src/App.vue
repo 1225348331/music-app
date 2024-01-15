@@ -1,10 +1,9 @@
 <script setup>
-import { onMounted, h, ref, onBeforeMount } from "vue";
+import { onMounted, h, ref } from "vue";
 import "element-plus/es/components/notification/style/css";
-import { RouterLink, useRouter } from "vue-router";
+import { RouterLink } from "vue-router";
 import { NIcon } from "naive-ui";
 import Player from "@/components/player/player.vue";
-import iconText from "@/components/icon-text.vue";
 import { IosSettings, MdCloudy } from "@vicons/ionicons4";
 import {
   FavoriteRound,
@@ -13,8 +12,14 @@ import {
   AttachEmailOutlined,
   CameraTwotone,
 } from "@vicons/material";
+import {
+  NNotificationProvider,
+  NMenu,
+  NConfigProvider,
+  NScrollbar,
+} from "naive-ui";
 
-const activeKey = ref("test");
+const activeKey = ref("home");
 function renderIcon(icon, color = "#68cb25") {
   return () =>
     h(
@@ -164,7 +169,7 @@ onMounted(() => {});
   background-color: #f4f4f5;
   display: flex;
   flex-flow: column nowrap;
-  font-family: '灵悦黑体';
+  font-family: "灵悦黑体";
 
   .main-body {
     width: 100vw;
@@ -204,9 +209,11 @@ onMounted(() => {});
       width: calc(100vw - 300px);
       box-sizing: border-box;
       --n-scrollbar-width: 0px !important;
-
-      .n-scrollbar-content {
-        padding: 20px;
+      .n-scrollbar-container {
+        .n-scrollbar-content {
+          height: 100%;
+          padding: 20px;
+        }
       }
     }
   }

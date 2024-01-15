@@ -3,7 +3,14 @@
 import { computed, inject, ref, watch } from "vue";
 import useMusicStore from "@/store/music.js";
 /* naive UI */
-import { useNotification } from "naive-ui";
+import {
+  useNotification,
+  NSlider,
+  NIcon,
+  NIconWrapper,
+  NDrawer,
+  NDrawerContent,
+} from "naive-ui";
 import {
   PlayCircleFilled,
   PauseCircleFilledFilled,
@@ -19,7 +26,7 @@ import { ElDialog } from "element-plus";
 import { playPreIndex, playNextIndex, playMusic } from "@/utils/play-utils";
 import { formatTime } from "@/utils/utils";
 /* 组件 */
-import BigPlayer from "./BigPlayer.vue";
+import BigPlayer from "@/components/player/BigPlayer.vue";
 
 const musicStore = useMusicStore();
 const notification = useNotification();

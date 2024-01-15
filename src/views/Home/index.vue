@@ -5,6 +5,7 @@ import useMainStore from "@/store/index.js";
 import useMusicStore from "@/store/music.js";
 import { playMusicList, playMusic } from "@/utils/play-utils";
 import { getRecommendSongs } from "@/api/cover";
+import { NScrollbar } from 'naive-ui'
 
 const mainStore = useMainStore();
 const musicStore = useMusicStore();
@@ -117,7 +118,7 @@ onMounted(async () => {
   width: 100%;
 
   .coverList {
-    height: 86vh;
+    height: 100%;
     width: 32%;
     border-radius: 13px;
     margin: 0px 5px;

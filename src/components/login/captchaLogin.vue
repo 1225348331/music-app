@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { PhoneAndroidRound, PasswordRound } from "@vicons/material";
 import { captchaSent, captchaVerify, phoneLogin } from "@/api/login/captchaLogin.js";
+import { NIcon,NForm,NFormItem,NInputNumber,NButton } from "naive-ui";
 // 手机号登录数据
 const phoneFormRef = ref(null);
 const phoneFormData = ref({
