@@ -183,6 +183,7 @@ const playSong = (index, item) => {
   bottom: 0;
   left: 0;
   width: 100%;
+  height: 80px;
   .slider {
     display: flex;
     flex-flow: row nowrap;
@@ -200,6 +201,7 @@ const playSong = (index, item) => {
   }
 
   .info {
+    font-family: "灵悦黑体";
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-around;

@@ -15,7 +15,6 @@ export async function getUserCloud(limit = 30, page = 0) {
       offset: page * limit,
     },
   });
-  console.log(res.data);
   return res.data;
 }
 

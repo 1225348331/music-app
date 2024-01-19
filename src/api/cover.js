@@ -35,10 +35,8 @@ export async function getSongUrl(id) {
     url: `/song/url?id=${id}`,
     method: "get",
   });
-  console.log(res.data);
   let url = res.data.data[0].url;
   if (!url?.includes("https")) url = url?.split("http").join("https");
-  console.log(url);
   return url;
 }
 
@@ -52,7 +50,7 @@ export async function getLyric(id) {
     url: `/lyric?id=${id}`,
     method: "get",
   });
-  return res.data.lrc.lyric;
+  return res.data?.lrc?.lyric;
 }
 
 /**
@@ -61,20 +59,20 @@ export async function getLyric(id) {
  * @return {*}
  */
 export function lyricParser(lrcGet) {
+  if (!lrcGet) {
+    return [
+      {
+        t: 0,
+        c: "暂未搜索到歌词",
+      },
+    ];
+  }
+
   var lrcArray = []; //新建数组,用于存放歌词
-
   var lrc = lrcGet.split("\n"); //
-  // console.log(lrc);
-
   lrc.forEach((item) => {
     //过滤空白文本
-    if (
-      item.split("]")[1] == "" ||
-      item == ""
-      // ||
-      // item.indexOf("作曲") !== -1 ||
-      // item.indexOf("作词") !== -1
-    ) {
+    if (item.split("]")[1] == "" || item == "") {
       return true;
     }
     //转化时间

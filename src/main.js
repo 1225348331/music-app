@@ -1,5 +1,6 @@
 import { createApp } from "vue";
-import "./style.css";
+import "@/style/main.scss";
+import "@/style/animate.scss";
 import App from "./App.vue";
 // 全局状态共享 pinia
 import { createPinia } from "pinia";

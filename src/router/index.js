@@ -9,7 +9,7 @@ let routes = [
   {
     path: "/",
     name: "home",
-    // component: () => import("@/views/playList/index.vue"),
+    // component: () => import("@/views/Test.vue"),
     component: () => import("@/views/Home/index.vue"),
     beforeEnter: async (to, from) => {
       const userStore = useMainStore();
@@ -37,6 +37,12 @@ let routes = [
     path: "/cloud",
     name: "cloud",
     component: () => import("@/views/Cloud/index.vue"),
+  },
+  {
+    // 搜索
+    path: "/search",
+    name: "search",
+    component: () => import("@/views/Search/index.vue"),
   },
 ];
 

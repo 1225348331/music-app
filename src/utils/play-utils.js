@@ -6,7 +6,8 @@ import useMusicStore from "@/store/music";
  * @return {*}
  */
 export async function playMusicList(id) {
-    // 重置播放器信息
+  if (!id) return;
+  // 重置播放器信息
   resetPlayInfo();
   let musicStore = useMusicStore();
   // 获取歌单列表
@@ -23,6 +24,7 @@ export async function playMusicList(id) {
  * @return {*}
  */
 export async function playMusic(song) {
+  if (!song) return;
   // 重置播放器信息
   resetPlayInfo();
   // 设置音乐基础信息
@@ -39,6 +41,7 @@ export async function playMusic(song) {
  * @return {*}
  */
 export async function playSong(id) {
+  if (!id) return;
   let musicStore = useMusicStore();
   // 获取歌曲链接
   let url = await getSongUrl(id);
@@ -54,6 +57,7 @@ export async function playSong(id) {
  * @return {*}
  */
 export async function setLyric(id) {
+  if (!id) return;
   let musicStore = useMusicStore();
   // 获取歌词
   let lyrString = await getLyric(id);
@@ -66,12 +70,12 @@ export async function setLyric(id) {
  * @return {*}
  */
 export async function setMusicInfo(song) {
+  if (!song) return;
   let musicStore = useMusicStore();
   musicStore.currentMusicInfo.id = song.id;
   musicStore.currentMusicInfo.name = song.name;
   musicStore.currentMusicInfo.artist = song.artist;
   musicStore.currentMusicInfo.pic = song.pic;
-  
 }
 
 /**
@@ -171,6 +175,5 @@ export const playNextIndex = () => {
   else {
     // 不做处理
   }
-
   playMusic(musicStore.musicList[musicStore.player.currentMusicIndex]);
 };

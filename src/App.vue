@@ -1,100 +1,19 @@
 <script setup>
-import { onMounted, h, ref } from "vue";
-import "element-plus/es/components/notification/style/css";
-import { RouterLink } from "vue-router";
-import { NIcon } from "naive-ui";
-import Player from "@/components/player/player.vue";
-import { IosSettings, MdCloudy } from "@vicons/ionicons4";
 import {
-  FavoriteRound,
-  AccountBalanceSharp,
-  AddAPhotoRound,
-  AttachEmailOutlined,
-  CameraTwotone,
-} from "@vicons/material";
-import {
+  NLayout,
+  NLayoutHeader,
+  NLayoutSider,
+  NIcon,
   NNotificationProvider,
-  NMenu,
   NConfigProvider,
-  NScrollbar,
 } from "naive-ui";
-
-const activeKey = ref("home");
-function renderIcon(icon, color = "#68cb25") {
-  return () =>
-    h(
-      NIcon,
-      {
-        size: 20,
-        color: color,
-      },
-      { default: () => h(icon) }
-    );
-}
-const menuOptions = [
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: "home",
-          },
-        },
-        { default: () => "我的歌单" }
-      ),
-    key: "home",
-    icon: renderIcon(FavoriteRound, "#f55e55"),
-  },
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: "cloud",
-          },
-        },
-        { default: () => "我的云盘" }
-      ),
-    key: "login",
-    icon: renderIcon(IosSettings),
-  },
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: "login",
-          },
-        },
-        { default: () => "登录界面" }
-      ),
-    key: "test",
-    icon: renderIcon(MdCloudy, "#2b88c5"),
-  },
-  {
-    label: "推荐歌手",
-    key: "推荐歌手",
-    icon: renderIcon(AccountBalanceSharp, "#b22c00"),
-  },
-  {
-    label: "上传音乐",
-    key: "上传音乐",
-    icon: renderIcon(AddAPhotoRound, "#ff6501"),
-  },
-  {
-    label: "统计",
-    key: "统计",
-    icon: renderIcon(AttachEmailOutlined, "#ffb200"),
-  },
-  {
-    label: "关于网站",
-    key: "关于网站",
-    icon: renderIcon(CameraTwotone, "#eaacff"),
-  },
-];
+/* vue生态 */
+import { onMounted, h, ref } from "vue";
+/* 组件 */
+import Menu from "@/components/Global/Menu.vue";
+import MainLayout from "@/components/Global/MainLayout.vue";
+import Player from "@/components/player/player.vue";
+import MainNav from "@/components/Nav/MainNav.vue";
 
 const themeOverrides = {
   Input: {
@@ -102,6 +21,7 @@ const themeOverrides = {
     caretColor: "#f55e55",
     borderHover: "1px solid #f55e55",
     borderFocus: "1px solid #f55e55",
+    boxShadowFocus: "0 0 0 1px #f55e55",
   },
   Slider: {
     fillColor: "#f55e55",
@@ -128,113 +48,90 @@ const themeOverrides = {
   },
 };
 
+const asideMenuCollapsed = ref(false);
+
 onMounted(() => {});
 </script>
-
 <template>
   <n-notification-provider :max="3">
-    <n-config-provider :theme-overrides="themeOverrides">
-      <div
-        class="container"
-        style="height: 100vh; background-color: rgb(250, 250, 252)"
-      >
-        <!-- 菜单 + 路由 -->
-        <div class="main-body">
-          <!-- 左侧导航栏 -->
-          <div class="left">
-            <div class="login">登录</div>
-            <n-menu v-model:value="activeKey" :options="menuOptions" />
-          </div>
-          <!-- 中间路由 -->
-          <n-scrollbar class="body" style="max-height: calc(100vh - 70px)">
-            <router-view v-slot="{ Component }">
-              <Transition name="scale" mode="out-in">
-                <keep-alive>
-                  <component :is="Component" />
-                </keep-alive>
-              </Transition>
-            </router-view>
-          </n-scrollbar>
-        </div>
-        <!-- 底部播放器 -->
-        <div class="musicPlayer">
-          <Player />
-        </div>
-      </div>
+    <n-config-provider
+      :theme-overrides="themeOverrides"
+      :style="{ height: '100vh' }"
+    >
+      <!-- 主框架 -->
+      <n-layout class="all-layout">
+        <!-- 导航栏 -->
+        <n-layout-header bordered> <MainNav /> </n-layout-header>
+        <!-- 主内容 - 有侧边栏 -->
+        <n-layout position="absolute" class="body-layout player-bar" has-sider>
+          <!-- 侧边栏 -->
+          <n-layout-sider
+            :native-scrollbar="false"
+            :collapsed-width="64"
+            :width="240"
+            class="main-sider"
+            show-trigger
+            collapse-mode="width"
+            bordered
+            :collapsed="asideMenuCollapsed"
+            @collapse="asideMenuCollapsed = true"
+            @expand="asideMenuCollapsed = false"
+          >
+            <!-- 菜单 -->
+            <div class="sider-all">
+              <Menu :asideMenuCollapsed="asideMenuCollapsed" />
+            </div>
+          </n-layout-sider>
+          <!-- 页面区 -->
+          <n-layout class="content-layout" :native-scrollbar="false" embedded>
+            <MainLayout :asideMenuCollapsed="asideMenuCollapsed" />
+          </n-layout>
+        </n-layout>
+      </n-layout>
+      <!-- 主播放器 -->
+      <Player />
     </n-config-provider>
   </n-notification-provider>
 </template>
-<style lang="scss">
-.container {
-  background-color: #f4f4f5;
-  display: flex;
-  flex-flow: column nowrap;
+
+<style lang="scss" scoped>
+.all-layout {
+  height: 100%;
+  transition: transform 0.3s, opacity 0.3s;
   font-family: "灵悦黑体";
-
-  .main-body {
-    width: 100vw;
+  .n-layout-header {
+    height: 60px;
     display: flex;
-    flex-flow: row nowrap;
-    flex-grow: 1;
-
-    .left {
-      font-weight: bold;
-      align-items: center;
-      width: 300px;
-      height: calc(100vh - 70px);
-      background: #fff;
-      border-radius: 0px 10px 10px 0px;
-      box-shadow: -12px -20px 16px 2px rgba(0, 0, 0, 0.04),
-        2px -1px 20px 0px rgba(0, 0, 0, 0.08);
-
-      & > div {
-        padding: 15px 0px;
-        border-radius: 10px;
-        cursor: pointer;
-        width: 100%;
-        // box-shadow: 0px 6px 16px 2px rgba(0, 0, 0, 0.04),
-        //   0px 4px 10px rgba(0, 0, 0, 0.08);
+    flex-direction: row;
+    align-items: center;
+    -webkit-app-region: drag;
+  }
+  .body-layout {
+    width: 100vw;
+    top: 60px;
+    transition: bottom 0.3s;
+    .main-sider {
+      :deep(.n-scrollbar-content) {
+        height: 100%;
       }
-
-      .login {
-        text-align: center;
+      .sider-all {
+        height: 100%;
       }
-
-      .functions {
-        text-align: center;
+      @media (max-width: 900px) {
+        display: none;
       }
     }
 
-    .body {
-      width: calc(100vw - 300px);
-      box-sizing: border-box;
-      --n-scrollbar-width: 0px !important;
-      .n-scrollbar-container {
-        .n-scrollbar-content {
-          height: 100%;
-          padding: 20px;
-        }
-      }
+    .content-layout {
+      flex-grow: 1;
+    }
+    &.player-bar {
+      bottom: 80px;
     }
   }
-
-  .musicPlayer {
-    box-sizing: border-box;
-    height: 70px;
+  &.full-player {
+    opacity: 0;
+    transform: scale(0.9);
   }
-}
-
-/* 路由跳转动画 */
-.scale-enter-active {
-  transition: all 0.1s ease-out;
-}
-
-.scale-leave-active {
-  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
-}
-.scale-enter-from,
-.scale-leave-to {
-  transform: translateX(20px);
-  opacity: 0;
 }
 </style>

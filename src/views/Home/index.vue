@@ -5,10 +5,12 @@ import useMainStore from "@/store/index.js";
 import useMusicStore from "@/store/music.js";
 import { playMusicList, playMusic } from "@/utils/play-utils";
 import { getRecommendSongs } from "@/api/cover";
-import { NScrollbar } from 'naive-ui'
+import { NScrollbar, NSkeleton } from "naive-ui";
 
 const mainStore = useMainStore();
 const musicStore = useMusicStore();
+
+const loading = ref(true);
 
 // 每日推荐
 const dailyRecommend = ref([]);
@@ -44,13 +46,14 @@ const playCoverSong = (song, index) => {
 onMounted(async () => {
   let playlistRes = await getUserPlaylist(mainStore.userData.id);
   allCoverList.value = playlistRes.playlist;
-
   dailyRecommend.value = await getRecommendSongs();
+  loading.value = false;
 });
 </script>
 <template>
   <div class="home">
-    <div class="myPage coverList">
+    <n-skeleton class="coverList" v-if="loading" />
+    <div v-else class="myPage coverList">
       <div class="userCover">每日推荐</div>
       <n-scrollbar class="body">
         <div
@@ -66,8 +69,8 @@ onMounted(async () => {
         </div>
       </n-scrollbar>
     </div>
-    <!-- 创建的歌单 -->
-    <div class="coverList">
+    <n-skeleton class="coverList" v-if="loading" />
+    <div v-else class="coverList">
       <div class="userCover">{{ mainStore.userData.name }}创建的歌单</div>
       <n-scrollbar class="body">
         <div
@@ -86,8 +89,8 @@ onMounted(async () => {
         </div>
       </n-scrollbar>
     </div>
-    <!-- 收藏的歌单 -->
-    <div class="coverList">
+    <n-skeleton class="coverList" v-if="loading" />
+    <div v-else class="coverList">
       <div class="userCover">{{ mainStore.userData.name }}收藏的歌单</div>
       <n-scrollbar class="body">
         <div
@@ -114,11 +117,10 @@ onMounted(async () => {
   flex-flow: row nowrap;
   justify-content: space-around;
   align-items: flex-start;
-  height: 100%;
-  width: 100%;
 
   .coverList {
-    height: 100%;
+    box-sizing: border-box;
+    height: calc(100vh - 200px);
     width: 32%;
     border-radius: 13px;
     margin: 0px 5px;

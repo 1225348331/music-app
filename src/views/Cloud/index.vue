@@ -1,12 +1,13 @@
 <script setup>
 /* vue生态 */
-import { onMounted, ref, reactive } from "vue"; // vue
+import { onMounted, ref, reactive, h } from "vue"; // vue
 import useMainStore from "@/store/index.js"; // pinia
 import * as dayjs from "dayjs"; // 时间库
-import { NDataTable } from "naive-ui"; // UI库
+import { NDataTable, NButton, NIcon } from "naive-ui"; // UI库
+import { CloudUploadSharp } from "@vicons/material";
 /* api */
 import { getUserCloud } from "@/api/cloud.js";
-import { playMusicList, playMusic } from "@/utils/play-utils";
+import { playMusic } from "@/utils/play-utils";
 
 const mainStore = useMainStore();
 
@@ -46,11 +47,18 @@ const paginationReactive = reactive({
     return `总共 ${itemCount} 首`;
   },
 });
+const cloudInfo = reactive({
+  size: 12.98,
+  maxSize: 100,
+});
 
 // 请求数据
 function query(page, pageSize) {
   return new Promise((resolve) => {
     getUserCloud(pageSize, page - 1).then((res) => {
+      console.log(res);
+      cloudInfo.size = res.size / Math.pow(1024, 3);
+      cloudInfo.maxSize = res.maxSize / Math.pow(1024, 3);
       // 总共多少数据
       const total = res.count;
       // 总共多少页数
@@ -92,35 +100,43 @@ const handlePageChange = (currentPage) => {
   }
 };
 
+// 点击事件
+const rowProps = (row) => {
+  return {
+    style: "cursor:pointer",
+    onClick: async () => {
+      await playMusic(row);
+    },
+  };
+};
+
 onMounted(async () => {
-  let res = await getUserCloud();
-  console.log(res.data);
   query(paginationReactive.page, paginationReactive.pageSize).then((data) => {
     dataRef.value = data.data;
     paginationReactive.pageCount = data.pageCount;
     paginationReactive.itemCount = data.total;
     loadingRef.value = false;
   });
-  // let song = {
-  //   id: res.data[502].simpleSong.id,
-  //   name: res.data[502].simpleSong.name,
-  //   artist: res.data[502].simpleSong.ar[0].name,
-  //   pic: res.data[502].simpleSong.al.picUrl,
-  // };
-  // await playMusic(song);
-  // 获取用户歌单
-  // let playlistRes = await getUserPlaylist(mainStore.userData.id);
-  // allCoverList.value = playlistRes.playlist;
 });
 </script>
 <template>
   <div class="cloud">
     <div class="header">
       <h1>我的云盘</h1>
-      <div>云盘容量</div>
+      <div class="size">
+        云盘容量<span
+          >{{ cloudInfo.size.toFixed(2) }}GB/{{
+            cloudInfo.maxSize.toFixed(2)
+          }}GB</span
+        >
+      </div>
       <div class="functional">
-        <span>上传歌曲</span>
-        <span>模糊搜索</span>
+        <n-button round>
+          <template #icon>
+            <n-icon><CloudUploadSharp /></n-icon>
+          </template>
+          上传歌曲
+        </n-button>
       </div>
     </div>
     <n-data-table
@@ -133,6 +149,7 @@ onMounted(async () => {
       :pagination="paginationReactive"
       @update:page="handlePageChange"
       :bordered="false"
+      :row-props="rowProps"
       flex-height
     />
   </div>
@@ -145,10 +162,22 @@ onMounted(async () => {
   height: 100%;
 
   .header {
-    height: 15%;
+    padding-left: 10px;
+    & > div {
+      margin: 20px 0px;
+    }
+    .size {
+      span {
+        font-family: "";
+        font-weight: 500;
+      }
+    }
   }
   .cloudTable {
     flex-grow: 1;
+    .n-scrollbar-content {
+      padding: 0px !important;
+    }
   }
 }
 </style>
