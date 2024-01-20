@@ -8,7 +8,7 @@ import SvgIcon from "@/components/Global/SvgIcon.vue";
 let props = defineProps(["asideMenuCollapsed"]);
 const router = useRouter();
 // 菜单栏绑定值
-const menuActiveKey = ref(router.currentRoute.value.name ?? "home");
+const menuActiveKey = ref(router.currentRoute.value.name ?? "Home");
 // 图标渲染
 const renderIcon = (icon, color = "#68cb25") => {
   return () =>
@@ -22,12 +22,12 @@ const menuOptions = computed(() => [
         RouterLink,
         {
           to: {
-            name: "home",
+            name: "Home",
           },
         },
         () => ["个性推荐"]
       ),
-    key: "home",
+    key: "Home",
     icon: renderIcon("home", "#f55e55"),
   },
   {
@@ -36,12 +36,12 @@ const menuOptions = computed(() => [
         RouterLink,
         {
           to: {
-            name: "home",
+            name: "Recommend",
           },
         },
         () => ["发现音乐"]
       ),
-    key: "discover",
+    key: "Recommend",
     icon: renderIcon("discover-fill", "#b22c00"),
   },
   {
@@ -66,7 +66,7 @@ const menuOptions = computed(() => [
         RouterLink,
         {
           to: {
-            name: "home",
+            name: "Home",
           },
           class: "user-playlist",
         },
@@ -81,7 +81,7 @@ const menuOptions = computed(() => [
         RouterLink,
         {
           to: {
-            name: "home",
+            name: "Home",
           },
         },
         () => ["我的收藏"]
@@ -95,7 +95,7 @@ const menuOptions = computed(() => [
         RouterLink,
         {
           to: {
-            name: "home",
+            name: "Home",
           },
         },
         () => ["我的云盘"]
@@ -109,7 +109,7 @@ const menuOptions = computed(() => [
         RouterLink,
         {
           to: {
-            name: "home",
+            name: "Home",
           },
         },
         () => ["最近播放"]

@@ -8,7 +8,7 @@ import { getUserAccount } from "@/api/user.js";
 let routes = [
   {
     path: "/",
-    name: "home",
+    name: "Home",
     // component: () => import("@/views/Test.vue"),
     component: () => import("@/views/Home/index.vue"),
     beforeEnter: async (to, from) => {
@@ -28,21 +28,27 @@ let routes = [
   },
   {
     // 登录
-    path: "/login",
-    name: "login",
+    path: "/Login",
+    name: "Login",
     component: () => import("@/views/Login/Login.vue"),
   },
   {
     // 我的云盘
-    path: "/cloud",
-    name: "cloud",
+    path: "/Cloud",
+    name: "Cloud",
     component: () => import("@/views/Cloud/index.vue"),
   },
   {
     // 搜索
-    path: "/search",
-    name: "search",
+    path: "/Search",
+    name: "Search",
     component: () => import("@/views/Search/index.vue"),
+  },
+  {
+    // 个性推荐
+    path: "/Recommend",
+    name: "Recommend",
+    component: () => import("@/views/Recommend/index.vue"),
   },
 ];
 
