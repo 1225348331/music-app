@@ -30,9 +30,9 @@ const createCoverList = computed(() => {
 });
 // 播放歌单
 const playCover = (cover) => {
-  playMusicList(cover.id);
+  console.log(cover.id);
+  playMusicList({ id: cover.id });
 };
-
 // 播放歌单中的单曲
 const playCoverSong = (song, index) => {
   // 如果当前歌单列表不是当前歌单，则替换歌单列表

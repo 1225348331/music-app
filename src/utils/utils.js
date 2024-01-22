@@ -11,4 +11,15 @@ export const formatTime = (time) => {
   return `${min}:${sec}`;
 };
 
-
+/**
+ * @description: 获取歌曲的歌手
+ * @param {*} artistList 歌手列表
+ * @return {*}
+ */
+export const getArtist = (artistList) => {
+  let str = "";
+  artistList.forEach((item) => {
+    str += item.name + "&";
+  });
+  return str.slice(0, str.length - 1);
+};

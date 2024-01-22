@@ -12,7 +12,7 @@ const allCoverList = ref([]);
 
 // 播放歌单
 const playCover = async (cover) => {
-  playMusicList(cover.id);
+  playMusicList({ id: cover.id });
 };
 
 onMounted(async () => {

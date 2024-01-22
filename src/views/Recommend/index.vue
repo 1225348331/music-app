@@ -7,36 +7,51 @@ import { getRecommendSongs } from "@/api/cover";
 import SpecialCoverCard from "@/components/Cover/SpecialCoverCard.vue";
 import PrivateFm from "@/components/player/PrivateFm.vue";
 import MainCover from "@/components/Cover/MainCover.vue";
+import { playMusicList } from "@/utils/play-utils";
 
-const dailySongsCoverData = ref(null);
-const likeSongsCoverData = ref(null);
-const recommendData = ref(null);
+const dailySongsCoverData = {
+  name: "每日推荐",
+  desc: "根据你的音乐口味，每日更新",
+};
+const likeSongsCoverData = {
+  name: "喜欢的音乐",
+  desc: "发现你独特的音乐品味",
+};
+const recommendData = ref({
+  recommendList: {
+    name: "推荐歌单",
+    loadingNum: 12,
+    data: [],
+  },
+  artist: {
+    name: "热门歌手",
+    type: "artist",
+    loadingNum: 6,
+    data: [],
+  },
+  album: {
+    name: "新碟上架",
+    type: "album",
+    loadingNum: 12,
+    data: [],
+  },
+});
+// 播放每日推荐
+const playDailyRecommend = async () => {
+  let musicList = await getRecommendSongs();
+  playMusicList({
+    musicList,
+  });
+};
+// 播放喜欢的音乐列表
+const playLikest = async () => {
+  playMusicList({
+    id: 482916379,
+  });
+};
 
 onMounted(async () => {
   // dailySongsCoverData.value = await getRecommendSongs();
-  dailySongsCoverData.value = {
-    name: "每日推荐",
-    desc: "根据你的音乐口味，每日更新",
-    cover:
-      "https://img.zcool.cn/community/019ef25e79940ba80120a895cec45d.jpg@1280w_1l_2o_100sh.jpg",
-  };
-  likeSongsCoverData.value = {
-    name: "喜欢的音乐",
-    desc: "发现你独特的音乐品味",
-    cover:
-      "https://img.zcool.cn/community/019ef25e79940ba80120a895cec45d.jpg@1280w_1l_2o_100sh.jpg",
-  };
-  recommendData.value = [
-    {
-      name: "推荐歌单",
-    },
-    {
-      name: "雷达歌单",
-    },
-    {
-      name: "歌手推荐",
-    },
-  ];
 });
 </script>
 <!-- 个性推荐 -->
@@ -55,26 +70,20 @@ onMounted(async () => {
             :data="dailySongsCoverData"
             :showIcon="false"
             showDate
-            @click="jumpPage('daily-songs')"
+            @click="playDailyRecommend"
           />
         </n-gi>
         <!-- 喜欢的音乐 -->
         <n-gi>
-          <SpecialCover
-            :data="likeSongsCoverData"
-            @click="jumpPage('like-songs')"
-          />
+          <SpecialCover :data="likeSongsCoverData" @click="playLikest" />
         </n-gi>
       </n-grid>
       <PrivateFm class="rec-fm" />
     </div>
     <!-- 公共推荐 -->
     <div v-for="(item, index) in recommendData" :key="index" class="rec-public">
-      <n-h3
-        class="title"
-        prefix="bar"
-        @click="item.to ? router.push(item.to) : null"
-      >
+      <!-- @click="item.to ? router.push(item.to) : null" -->
+      <n-h3 class="title" prefix="bar">
         <n-text class="name">{{ item.name }}</n-text>
         <n-icon v-if="item.to" class="more" depth="3">
           <SvgIcon icon="chevron-right" />

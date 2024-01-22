@@ -4,19 +4,11 @@ import { useRoute } from "vue-router";
 import { searchSong } from "@/api/search";
 import { NSkeleton } from "naive-ui";
 import { playMusic } from "@/utils/play-utils";
+import { getArtist } from "@/utils/utils";
 
 const route = useRoute();
 const searchData = ref(null);
 const loading = ref(true);
-
-// 获取歌手
-const getArtist = (artistList) => {
-  let str = "";
-  artistList.forEach((item) => {
-    str += item.name + "&";
-  });
-  return str.slice(0, str.length - 1);
-};
 
 const play = (item) => {
   let song = {

@@ -1,5 +1,6 @@
 import request from "@/utils/request.js";
 import useMusicStore from "@/store/music.js";
+import { getArtist } from "@/utils/utils";
 
 /**
  * @description: 获取歌单
@@ -17,12 +18,10 @@ export async function getMusicList(id) {
     list.push({
       id: item.id,
       name: item.name,
-      artist: item.ar[0].name,
+      artist: getArtist(item.ar),
       pic: item.al.picUrl,
     });
   });
-
-  console.log(list);
   return list;
 }
 
@@ -90,6 +89,15 @@ export function lyricParser(lrcGet) {
 }
 
 /**
+ * @description: 获取我最喜欢的歌曲列表
+ * @return {*}
+ */
+export async function getLikest() {
+  let res = await getMusicList(482916379);
+  return res;
+}
+
+/**
  * @description: 获取每日推荐歌曲
  * @return {*}
  */
@@ -105,9 +113,49 @@ export async function getRecommendSongs() {
       id: item.id,
       name: item.name,
       pic: item.al.picUrl,
-      artist: item.ar[0].name,
+      artist: getArtist(item.ar),
     });
   });
 
   return dailySongs;
+}
+
+/**
+ * @description: 获取每日推荐歌单
+ * @return {*}
+ */
+export async function getRecommendResource() {
+  const res = await request({
+    url: `/recommend/resource`,
+    method: "get",
+  });
+  return res;
+}
+
+/**
+ * @description: 获取热门歌手
+ * @return {*}
+ */
+export async function getTopArtists(limit = 6, offset = 0) {
+  const res = await request({
+    url: `/top/artists`,
+    method: "get",
+    params: {
+      limit,
+      offset,
+    },
+  });
+  return res;
+}
+
+/**
+ * @description: 获取最新专辑
+ * @return {*}
+ */
+export async function getAlbumNewest() {
+  const res = await request({
+    url: `/album/newest`,
+    method: "get",
+  });
+  return res;
 }

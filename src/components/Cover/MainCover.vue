@@ -42,7 +42,7 @@ const props = defineProps({
 const coverDropdownRef = ref(null);
 
 // 默认加载数量
-const loadSize = ref(12);
+const loadSize = ref(props.loadingNum || 12);
 
 // 跳转页面
 const jumpLink = (data, type) => {
@@ -124,7 +124,7 @@ const jumpLink = (data, type) => {
           <div class="cover-img">
             <!-- 封面 -->
             <n-image
-              :src="type === 'mv' ? item.coverSize : item.coverSize.m"
+              :src="item.coverSize.m"
               class="cover-main-img"
               preview-disabled
               lazy

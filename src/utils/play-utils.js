@@ -5,13 +5,14 @@ import useMusicStore from "@/store/music";
  * @param {*} id 歌单id
  * @return {*}
  */
-export async function playMusicList(id) {
-  if (!id) return;
+export async function playMusicList({ id, musicList }) {
+  if (!id && !musicList) return;
   // 重置播放器信息
   resetPlayInfo();
   let musicStore = useMusicStore();
   // 获取歌单列表
-  musicStore.musicList = await getMusicList(id);
+  if (id) musicStore.musicList = await getMusicList(id);
+  if (musicList) musicStore.musicList = musicList;
   // 设置歌曲索引
   musicStore.player.currentMusicIndex = 0;
   // 播放音乐列表第一首

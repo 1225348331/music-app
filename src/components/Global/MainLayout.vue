@@ -1,5 +1,5 @@
 <script setup>
-import { NBackTop,NIcon } from "naive-ui";
+import { NBackTop, NIcon } from "naive-ui";
 import SvgIcon from "@/components/Global/SvgIcon.vue";
 const props = defineProps(["asideMenuCollapsed"]);
 </script>
@@ -19,11 +19,11 @@ const props = defineProps(["asideMenuCollapsed"]);
     </n-back-top>
     <!-- 路由页面 -->
     <router-view v-slot="{ Component }" class="main-router">
-      <keep-alive>
-        <Transition name="router" mode="out-in">
+      <transition name="router" mode="out-in">
+        <keep-alive>
           <component :is="Component" />
-        </Transition>
-      </keep-alive>
+        </keep-alive>
+      </transition>
     </router-view>
   </main>
 </template>

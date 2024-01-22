@@ -6,11 +6,6 @@ import SvgIcon from "@/Components/Global/SvgIcon.vue";
 const props = defineProps({
   // 展示数据
   data: {},
-  // 显示歌曲
-  showSongs: {
-    type: Boolean,
-    default: false,
-  },
   // 显示图标
   showIcon: {
     type: Boolean,
@@ -43,12 +38,11 @@ const props = defineProps({
   >
     <div :class="{ cover: true, date: showDate }">
       <n-image
-        :src="data?.cover"
+        src="src/assets/image/card.jpg"
         :img-props="{
           class: 'cover-img',
         }"
         class="cover-main-img"
-        fallback-src="src/assets/image/cover.jpg"
         preview-disabled
         @load="
           (e) => {
@@ -69,9 +63,7 @@ const props = defineProps({
     </div>
     <div class="content">
       <n-text class="name">{{ data?.name }}</n-text>
-      <n-text v-if="!showSongs && data?.desc" class="desc" depth="3">{{
-        data.desc
-      }}</n-text>
+      <n-text class="desc" depth="3">{{ data?.desc }}</n-text>
     </div>
   </n-card>
 </template>
