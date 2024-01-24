@@ -5,12 +5,14 @@ import useMainStore from "@/store/index.js";
 import useMusicStore from "@/store/music.js";
 import { playMusicList, playMusic } from "@/utils/play-utils";
 import { getRecommendSongs } from "@/api/cover";
-import { NScrollbar, NSkeleton } from "naive-ui";
+import { NScrollbar, NSkeleton, NGrid, NGi, NCard } from "naive-ui";
 
 const mainStore = useMainStore();
 const musicStore = useMusicStore();
 
 const loading = ref(true);
+// 占位数量
+const loadSize = 15;
 
 // 每日推荐
 const dailyRecommend = ref([]);
@@ -52,11 +54,19 @@ onMounted(async () => {
 </script>
 <template>
   <div class="home">
-    <n-skeleton class="coverList" v-if="loading" />
-    <div v-else class="myPage coverList">
+    <div class="myPage coverList">
       <div class="userCover">每日推荐</div>
       <n-scrollbar class="body">
+        <n-skeleton
+          v-if="loading"
+          :repeat="15"
+          class="cover-img"
+          height="40px"
+          :sharp="false"
+          :style="{ marginBottom: '10px' }"
+        />
         <div
+          v-else
           class="cover"
           v-for="(item, index) in dailyRecommend"
           @click="playCoverSong(item, index)"
@@ -69,11 +79,19 @@ onMounted(async () => {
         </div>
       </n-scrollbar>
     </div>
-    <n-skeleton class="coverList" v-if="loading" />
-    <div v-else class="coverList">
+    <div class="coverList">
       <div class="userCover">{{ mainStore.userData.name }}创建的歌单</div>
       <n-scrollbar class="body">
+        <n-skeleton
+          v-if="loading"
+          :repeat="15"
+          class="cover-img"
+          height="40px"
+          :sharp="false"
+          :style="{ marginBottom: '10px' }"
+        />
         <div
+          v-else
           class="cover"
           v-for="item in createCoverList"
           @click="playCover(item)"
@@ -89,11 +107,19 @@ onMounted(async () => {
         </div>
       </n-scrollbar>
     </div>
-    <n-skeleton class="coverList" v-if="loading" />
-    <div v-else class="coverList">
+    <div class="coverList">
       <div class="userCover">{{ mainStore.userData.name }}收藏的歌单</div>
       <n-scrollbar class="body">
+        <n-skeleton
+          v-if="loading"
+          :repeat="15"
+          class="cover-img"
+          height="40px"
+          :sharp="false"
+          :style="{ marginBottom: '10px' }"
+        />
         <div
+          v-else
           class="cover"
           v-for="item in collectCoverList"
           @click="playCover(item)"

@@ -4,8 +4,13 @@ import { NH1, NH3, NText, NIcon, NGrid, NGi } from "naive-ui";
 import SvgIcon from "@/components/Global/SvgIcon.vue";
 import SpecialCover from "@/components/Cover/SpecialCover.vue";
 import { getRecommendSongs } from "@/api/cover";
+import {
+  getRecommendResource,
+  getTopArtists,
+  getAlbumNewest,
+} from "@/api/recommend.js";
 import SpecialCoverCard from "@/components/Cover/SpecialCoverCard.vue";
-import PrivateFm from "@/components/player/PrivateFm.vue";
+import PrivateFm from "@/components/player/PrivateFm.vue"; //
 import MainCover from "@/components/Cover/MainCover.vue";
 import { playMusicList } from "@/utils/play-utils";
 
@@ -51,7 +56,12 @@ const playLikest = async () => {
 };
 
 onMounted(async () => {
-  // dailySongsCoverData.value = await getRecommendSongs();
+  // 推荐歌单
+  recommendData.value.recommendList.data = await getRecommendResource();
+  // 热门歌手
+  recommendData.value.artist.data = await getTopArtists();
+  // 新碟上架
+  recommendData.value.album.data = await getAlbumNewest();
 });
 </script>
 <!-- 个性推荐 -->
@@ -85,7 +95,7 @@ onMounted(async () => {
       <!-- @click="item.to ? router.push(item.to) : null" -->
       <n-h3 class="title" prefix="bar">
         <n-text class="name">{{ item.name }}</n-text>
-        <n-icon v-if="item.to" class="more" depth="3">
+        <n-icon v-if="item?.to" class="more" depth="3">
           <SvgIcon icon="chevron-right" />
         </n-icon>
       </n-h3>

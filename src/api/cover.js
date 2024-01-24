@@ -120,42 +120,4 @@ export async function getRecommendSongs() {
   return dailySongs;
 }
 
-/**
- * @description: 获取每日推荐歌单
- * @return {*}
- */
-export async function getRecommendResource() {
-  const res = await request({
-    url: `/recommend/resource`,
-    method: "get",
-  });
-  return res;
-}
 
-/**
- * @description: 获取热门歌手
- * @return {*}
- */
-export async function getTopArtists(limit = 6, offset = 0) {
-  const res = await request({
-    url: `/top/artists`,
-    method: "get",
-    params: {
-      limit,
-      offset,
-    },
-  });
-  return res;
-}
-
-/**
- * @description: 获取最新专辑
- * @return {*}
- */
-export async function getAlbumNewest() {
-  const res = await request({
-    url: `/album/newest`,
-    method: "get",
-  });
-  return res;
-}

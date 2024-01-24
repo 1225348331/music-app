@@ -25,7 +25,7 @@ const props = defineProps({
   // 折叠栅格
   gridCollapsed: {
     type: Boolean,
-    default: false,
+    default: true,
   },
   // 折叠后行数
   gridCollapsedRows: {
@@ -124,7 +124,11 @@ const jumpLink = (data, type) => {
           <div class="cover-img">
             <!-- 封面 -->
             <n-image
-              :src="item.coverSize.m"
+              :src="
+                type === 'mv'
+                  ? item.coverSize
+                  : item?.coverSize?.m || item?.picUrl + '?param=300y300'
+              "
               class="cover-main-img"
               preview-disabled
               lazy
@@ -134,23 +138,21 @@ const jumpLink = (data, type) => {
                 }
               "
             >
+              <!-- 未加载成功时的图片 -->
               <template #placeholder>
                 <div :class="['cover-loading', type]">
                   <img
                     class="loading-img"
                     :src="
                       type === 'mv'
-                        ? '/images/pic/video.png?assest'
+                        ? '/src/assets/image/pic/video.png'
                         : type === 'artist'
-                        ? '/images/pic/artist.jpg?assest'
-                        : '/images/pic/album.jpg?assest'
+                        ? '/src/assets/image/artist.jpg'
+                        : '/src/assets/image/album.jpg'
                     "
                     alt="song"
                   />
                 </div>
-                <!-- <div :class="['cover-loading', type]">
-                  <n-spin size="small" />
-                </div> -->
               </template>
             </n-image>
             <!-- 封面背板 -->
@@ -159,7 +161,7 @@ const jumpLink = (data, type) => {
               class="cover-main-shadow"
               lazy
               preview-disabled
-              :src="item.coverSize.m"
+              :src="item?.picUrl + '?param=50y50'"
             />
             <!-- 额外信息 -->
             <div v-if="item.desc" class="additional">
@@ -194,14 +196,14 @@ const jumpLink = (data, type) => {
               </n-text>
             </div>
             <!-- 歌曲数量 -->
-            <div v-if="type === 'artist' && item.size.music" class="size">
+            <div v-if="type === 'artist' && item.musicSize" class="size">
               <n-icon depth="3" size="16">
                 <SvgIcon
                   :icon="type !== 'artist' ? 'play-circle' : 'music-note'"
                 />
               </n-icon>
               <n-text depth="3">
-                {{ item.size.music }}
+                {{ item.musicSize }}
               </n-text>
             </div>
           </div>

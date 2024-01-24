@@ -1,14 +1,32 @@
 <script setup>
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
-import { onBeforeMount, ref } from "vue";
+import { getPrivateFm } from "@/api/recommend.js";
+import usePrivateFMStore from "@/store/privateFM.js";
+import { getArtist } from "@/utils/utils";
+import { onBeforeMount, onMounted, ref } from "vue";
 import { NImage, NIcon, NButton } from "naive-ui";
 import SvgIcon from "@/components/Global/SvgIcon.vue";
+import { playMusicList } from "@/utils/play-utils";
+import useMusicStore from "@/store/music";
 
 const privateFmSong = {};
 const playMode = ref("fm");
 const playState = ref(false);
 const playLoading = ref(false);
+
+/**
+ * @description: 播放私人音乐
+ * @return {*}
+ */
+export const playPrivateFm = async () => {
+  const PrivateFMStore = usePrivateFMStore();
+  if (!PrivateFMStore.data.length) {
+    PrivateFMStore.data = await getPrivateFm();
+  }
+  playMusicList(PrivateFMStore.data);
+  PrivateFMStore.data.shift()
+};
 
 // 播放暂停
 const fmPlayOrPause = () => {
@@ -27,7 +45,9 @@ const personalFmReload = async () => {
   await music.setPersonalFm();
 };
 
-onBeforeMount(async () => {});
+onMounted(async () => {
+  getPrivateFm();
+});
 </script>
 <!-- 私人 FM -->
 <template>
@@ -65,7 +85,7 @@ onBeforeMount(async () => {});
               <div class="cover-loading">
                 <img
                   class="loading-img"
-                  src="src/assets/image/song.jpg?assest"
+                  src="src/assets/image/song.jpg"
                   alt="loading-img"
                 />
               </div>

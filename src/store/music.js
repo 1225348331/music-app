@@ -13,7 +13,7 @@ const useMusicStore = defineStore("musicStore", {
       isPlay: false,
       // 当前播放音乐在音乐列表中的索引
       currentMusicIndex: -1,
-      // 顺序播放 / 随机播放 / 循环播放
+      // 顺序播放 0/ 随机播放 1/ 私人FM 2/循环播放 3
       playType: 0,
     },
     // 进度条参数

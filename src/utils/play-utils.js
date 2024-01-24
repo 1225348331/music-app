@@ -1,5 +1,7 @@
 import { getMusicList, getSongUrl, getLyric, lyricParser } from "@/api/cover";
+
 import useMusicStore from "@/store/music";
+
 /**
  * @description: 播放歌单
  * @param {*} id 歌单id
@@ -172,9 +174,15 @@ export const playNextIndex = () => {
       Math.random() * musicStore.musicList.length
     );
   }
+  // 私人FM
+  else if (musicStore.player.playType == 2) {
+    
+  }
   // 循环播放
   else {
     // 不做处理
   }
   playMusic(musicStore.musicList[musicStore.player.currentMusicIndex]);
 };
+
+
