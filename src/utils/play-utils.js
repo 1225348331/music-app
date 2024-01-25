@@ -1,5 +1,5 @@
 import { getMusicList, getSongUrl, getLyric, lyricParser } from "@/api/cover";
-
+import { getPrivateFm } from "@/api/recommend.js";
 import useMusicStore from "@/store/music";
 
 /**
@@ -127,6 +127,8 @@ function resetPlayInfo() {
   musicStore.currentMusicInfo.lyric.length = 0;
   // 歌词索引重置
   musicStore.lyric.currentLyricIndex = 0;
+  // 默认为顺序播放
+  musicStore.player.playType = 0;
 }
 
 /**
@@ -159,7 +161,7 @@ export const playPreIndex = () => {
  * @description: 播放下一首歌曲
  * @return {*}
  */
-export const playNextIndex = () => {
+export const playNextIndex = async () => {
   const musicStore = useMusicStore();
   // 顺序播放
   if (musicStore.player.playType == 0) {
@@ -176,7 +178,10 @@ export const playNextIndex = () => {
   }
   // 私人FM
   else if (musicStore.player.playType == 2) {
-    
+    musicStore.FMList.shift();
+    if (!musicStore.FMList.length) musicStore.FMList = await getPrivateFm();
+    playMusic(musicStore.FMList[0]);
+    return;
   }
   // 循环播放
   else {
@@ -184,5 +189,3 @@ export const playNextIndex = () => {
   }
   playMusic(musicStore.musicList[musicStore.player.currentMusicIndex]);
 };
-
-

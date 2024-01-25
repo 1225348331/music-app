@@ -24,6 +24,8 @@ const useMusicStore = defineStore("musicStore", {
     },
     // 歌单
     musicList: [],
+    // 私人FM歌单
+    FMList: [],
     // 当前播放音乐信息
     currentMusicInfo: {
       id: "",
