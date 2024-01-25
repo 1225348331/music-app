@@ -1,4 +1,6 @@
 import request from "@/utils/request.js";
+import { getArtist } from "@/utils/utils";
+import useMusicStore from "@/store/music";
 
 /**
  * @description: 获取每日推荐歌单
@@ -45,11 +47,11 @@ export async function getAlbumNewest() {
  * @return {*}
  */
 export async function getPrivateFm() {
+  const musicStore = useMusicStore();
   const res = await request({
     url: `/personal_fm`,
     method: "get",
   });
-
   let song = [];
   res.data.data.forEach((item) => {
     song.push({
@@ -57,8 +59,9 @@ export async function getPrivateFm() {
       name: item.name,
       artist: getArtist(item.artists),
       pic: item.album.picUrl,
+      album: item.album.name,
     });
   });
-  console.log(song);
+  musicStore.musicList = song;
   return song;
 }

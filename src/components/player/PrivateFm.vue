@@ -2,51 +2,33 @@
 import { storeToRefs } from "pinia";
 import { useRouter } from "vue-router";
 import { getPrivateFm } from "@/api/recommend.js";
-import usePrivateFMStore from "@/store/privateFM.js";
-import { getArtist } from "@/utils/utils";
-import { onBeforeMount, onMounted, ref } from "vue";
+
+import { computed, onBeforeMount, onMounted, ref } from "vue";
 import { NImage, NIcon, NButton } from "naive-ui";
 import SvgIcon from "@/components/Global/SvgIcon.vue";
-import { playMusicList } from "@/utils/play-utils";
+import { playMusicList, playNextIndex } from "@/utils/play-utils";
 import useMusicStore from "@/store/music";
 
-const privateFmSong = {};
-const playMode = ref("fm");
-const playState = ref(false);
-const playLoading = ref(false);
+const musicStore = useMusicStore();
 
 /**
  * @description: 播放私人音乐
  * @return {*}
  */
-export const playPrivateFm = async () => {
-  const PrivateFMStore = usePrivateFMStore();
-  if (!PrivateFMStore.data.length) {
-    PrivateFMStore.data = await getPrivateFm();
-  }
-  playMusicList(PrivateFMStore.data);
-  PrivateFMStore.data.shift()
-};
-
-// 播放暂停
-const fmPlayOrPause = () => {
-  if (playMode.value === "fm") {
-    playOrPause();
+const playPrivateFm = async () => {
+  if (musicStore.player.playType != 2) {
+    // 播放歌单
+    playMusicList({
+      musicList: musicStore.FMList,
+    });
+    musicStore.player.playType = 2
   } else {
-    // 更改播放模式
-    playMode.value = "fm";
-    initPlayer(true);
+    musicStore.audioPlayer.play();
   }
-};
-
-// 重新加载
-const personalFmReload = async () => {
-  console.log(111);
-  await music.setPersonalFm();
 };
 
 onMounted(async () => {
-  getPrivateFm();
+  musicStore.FMList = await getPrivateFm();
 });
 </script>
 <!-- 私人 FM -->
@@ -54,7 +36,7 @@ onMounted(async () => {
   <div
     class="private-fm"
     :style="{
-      '--color': playMode === 'fm' ? '#efefef' : `rgb(30, 30, 34)`,
+      '--color': '#efefef',
     }"
   >
     <!-- 背景 -->
@@ -62,7 +44,9 @@ onMounted(async () => {
       class="overlay"
       :style="{
         backgroundImage: `url(${
-          privateFmSong?.coverSize?.m || 'src/assets/image/song.jpg'
+          musicStore.FMList[0]?.pic
+            ? musicStore.FMList[0].pic
+            : 'src/assets/image/song.jpg'
         })`,
       }"
     />
@@ -70,9 +54,9 @@ onMounted(async () => {
     <div class="content">
       <!-- 封面 -->
       <Transition name="fade" mode="out-in">
-        <div :key="privateFmSong?.id" class="cover">
+        <div :key="musicStore.FMList[0]?.id" class="cover">
           <n-image
-            :src="privateFmSong?.coverSize?.l"
+            :src="musicStore.FMList[0]?.pic"
             class="cover-img"
             preview-disabled
             @load="
@@ -96,43 +80,38 @@ onMounted(async () => {
       <div class="data">
         <!-- 信息 -->
         <div class="info">
-          <span class="name">{{ privateFmSong?.name || "未知歌曲" }}</span>
+          <span class="name">{{
+            musicStore.FMList[0]?.name || "未知歌曲"
+          }}</span>
           <div class="artist">
             <n-icon depth="3" size="20">
               <SvgIcon icon="account-music" />
             </n-icon>
-            <div v-if="privateFmSong?.artists" class="all-ar">
-              <span
-                v-for="ar in privateFmSong.artists"
-                :key="ar.id"
-                class="ar"
-                @click.stop="router.push(`/artist?id=${ar.id}`)"
-              >
-                {{ ar.name }}
-              </span>
-            </div>
-            <div v-else class="all-ar">
-              <span class="ar">未知艺术家</span>
+            <div class="all-ar">
+              {{ musicStore.FMList[0]?.artist || "未知艺术家" }}
             </div>
           </div>
           <div
             class="album"
-            @click.stop="router.push(`/album?id=${privateFmSong?.album.id}`)"
+            @click.stop="
+              router.push(`/album?id=${musicStore.FMList[0]?.album.id}`)
+            "
           >
             <n-icon depth="3" size="20">
               <SvgIcon icon="album" />
             </n-icon>
-            <span v-if="privateFmSong?.album" class="al">
-              {{ privateFmSong.album.name }}
+            <span class="al">
+              {{ musicStore.FMList[0]?.album || "未知专辑" }}
             </span>
-            <span v-else class="album">未知专辑</span>
           </div>
         </div>
         <!-- 操作 -->
         <div class="control">
           <!-- 播放暂停 -->
           <n-button
-            :loading="playMode === 'fm' && playLoading"
+            :loading="
+              musicStore.player.playType == 2 && !musicStore.progress.value
+            "
             :focusable="false"
             class="play-control"
             color="#efefef"
@@ -140,26 +119,28 @@ onMounted(async () => {
             strong
             secondary
             circle
-            @click.stop="fmPlayOrPause"
           >
             <template #icon>
-              <Transition name="fade" mode="out-in">
-                <n-icon :key="playMode === 'fm' && playState" size="32">
-                  <SvgIcon
-                    :icon="
-                      playMode === 'fm'
-                        ? playState
-                          ? 'pause-rounded'
-                          : 'play-arrow-rounded'
-                        : 'play-arrow-rounded'
-                    "
-                  />
-                </n-icon>
-              </Transition>
+              <n-icon
+                v-if="!musicStore.player.isPlay || musicStore.player.playType != 2"
+                size="32"
+                @click="playPrivateFm"
+              >
+                <SvgIcon icon="play-arrow-rounded" />
+              </n-icon>
+              <n-icon
+                v-if="
+                  musicStore.player.isPlay && musicStore.player.playType == 2
+                "
+                @click="musicStore.audioPlayer.pause"
+                size="32"
+              >
+                <SvgIcon icon="pause-circle" />
+              </n-icon>
             </template>
           </n-button>
           <!-- 下一曲 -->
-          <n-icon class="play-other" size="26" @click.stop="">
+          <n-icon class="play-other" size="26" @click.stop="playNextIndex">
             <SvgIcon icon="skip-next-rounded" />
           </n-icon>
           <!-- 不喜欢 -->
@@ -208,7 +189,7 @@ onMounted(async () => {
       left: 0;
       background-color: #00000060;
       backdrop-filter: blur(20px);
-      border: 4px solid var(--n-scrollbar-color);
+      // border: 4px solid var(--n-scrollbar-color);
       box-sizing: border-box;
       border-radius: 16px;
     }

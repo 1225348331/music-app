@@ -45,6 +45,8 @@ const playCoverSong = (song, index) => {
   playMusic(song);
 };
 
+const data = ref(musicStore.name)
+
 onMounted(async () => {
   let playlistRes = await getUserPlaylist(mainStore.userData.id);
   allCoverList.value = playlistRes.playlist;
