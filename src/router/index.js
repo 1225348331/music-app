@@ -50,6 +50,13 @@ let routes = [
     name: "Recommend",
     component: () => import("@/views/Recommend/index.vue"),
   },
+  {
+    // 歌单列表
+    path: "/playlist",
+    name: "playlist",
+    component: () => import("@/views/List/playlist.vue"),
+    // component: () => import("@/views/Cloud/test.vue"),
+  },
 ];
 
 // 路由器

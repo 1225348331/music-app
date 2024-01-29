@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { NGrid, NGi, NCard, NImage, NText, NIcon, NSkeleton } from "naive-ui";
 import SvgIcon from "@/components/Global/SvgIcon.vue";
+import { getMusicList, getArtistHot, getAlbumDetail } from "@/api/cover.js";
 
 const router = useRouter();
 
@@ -46,17 +47,8 @@ const loadSize = ref(props.loadingNum || 12);
 
 // 跳转页面
 const jumpLink = (data, type) => {
-  console.log(data, type);
   try {
     switch (type) {
-      case "mv":
-        router.push({
-          path: "/videos-player",
-          query: {
-            id: data?.id,
-          },
-        });
-        break;
       case "playlist":
         router.push({
           path: "/playlist",
@@ -76,14 +68,6 @@ const jumpLink = (data, type) => {
       case "artist":
         router.push({
           path: "/artist",
-          query: {
-            id: data?.id,
-          },
-        });
-        break;
-      case "dj":
-        router.push({
-          path: "/dj",
           query: {
             id: data?.id,
           },

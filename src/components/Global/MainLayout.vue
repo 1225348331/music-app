@@ -20,7 +20,7 @@ const props = defineProps(["asideMenuCollapsed"]);
     <!-- 路由页面 -->
     <router-view v-slot="{ Component }" class="main-router">
       <transition name="router" mode="out-in">
-        <keep-alive>
+        <keep-alive :exclude="'playlist'">
           <component :is="Component" />
         </keep-alive>
       </transition>
