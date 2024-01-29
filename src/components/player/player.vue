@@ -160,8 +160,8 @@ const playSong = (index, item) => {
             item.id == musicStore.currentMusicInfo.id ? 'currentMusic' : ''
           "
         >
-          <span style="width: 7%">{{ index }}</span>
-          <span style="width: 75%">{{ item.name }}</span>
+          <span style="width: 8%; text-align: left">{{ index }}</span>
+          <span style="width: 74%">{{ item.name }}</span>
           <span style="width: 18%">{{ item.artist }}</span>
         </div>
       </n-drawer-content>

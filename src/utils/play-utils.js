@@ -150,6 +150,10 @@ export const playPreIndex = () => {
       Math.random() * musicStore.musicList.length
     );
   }
+  // 私人FM
+  else if (musicStore.player.playType == 2) {
+    return;
+  }
   // 循环播放
   else {
     // 不做处理

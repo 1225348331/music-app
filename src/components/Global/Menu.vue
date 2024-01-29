@@ -1,8 +1,13 @@
 <script setup>
-import { ref, h, computed } from "vue";
+import { ref, h, computed, onMounted } from "vue";
 import { useRouter, RouterLink } from "vue-router";
-import { NIcon, NMenu } from "naive-ui";
+import { NIcon, NMenu, NButton, NAvatar, NText } from "naive-ui";
 import SvgIcon from "@/components/Global/SvgIcon.vue";
+import { getUserPlaylist } from "@/api/user.js";
+import useMainStore from "@/store/index";
+import { ConsoleSqlOutlined } from "@vicons/antd";
+
+const mainStore = useMainStore();
 
 // 侧边栏折叠
 let props = defineProps(["asideMenuCollapsed"]);
@@ -15,21 +20,27 @@ const renderIcon = (icon, color = "#68cb25") => {
     h(NIcon, { color }, { default: () => h(SvgIcon, { icon }, null) });
 };
 
+// 创建的歌单
+const userPlaylists = ref({
+  label: () =>
+    h("div", { class: "user-list" }, [
+      h("span", { class: "name" }, ["创建的歌单"]),
+    ]),
+  key: "user-playlists",
+  children: [],
+});
+
+// 收藏的歌单
+const favoritePlaylists = ref({
+  label: () =>
+    h("div", { class: "user-list" }, [
+      h("span", { class: "name" }, ["收藏的歌单"]),
+    ]),
+  key: "favorite-playlists",
+  children: [],
+});
+
 const menuOptions = computed(() => [
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: "Home",
-          },
-        },
-        () => ["个性推荐"]
-      ),
-    key: "Home",
-    icon: renderIcon("home", "#f55e55"),
-  },
   {
     label: () =>
       h(
@@ -48,17 +59,6 @@ const menuOptions = computed(() => [
     label: "私人漫游",
     key: "fm",
     icon: renderIcon("radio", "#2b88c5"),
-  },
-  {
-    key: "divider-1",
-    type: "divider",
-  },
-  {
-    type: "group",
-    label: "我的音乐",
-    key: "user",
-    children: [],
-    show: !props.asideMenuCollapsed,
   },
   {
     label: () =>
@@ -84,44 +84,128 @@ const menuOptions = computed(() => [
             name: "Home",
           },
         },
-        () => ["我的收藏"]
-      ),
-    key: "like",
-    icon: renderIcon("star", "#ffb200"),
-  },
-  {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: "Home",
-          },
-        },
         () => ["我的云盘"]
       ),
     key: "cloud",
     icon: renderIcon("cloud", "#eaacff"),
   },
   {
-    label: () =>
-      h(
-        RouterLink,
-        {
-          to: {
-            name: "Home",
-          },
-        },
-        () => ["最近播放"]
-      ),
-    key: "history",
-    icon: renderIcon("history"),
-  },
-  {
     key: "divider-2",
     type: "divider",
   },
+  { ...userPlaylists.value, show: !props.asideMenuCollapsed },
+  { ...favoritePlaylists.value, show: !props.asideMenuCollapsed },
 ]);
+
+// 更改数据
+const changeUserPlaylists = (data) => {
+  // 用户ID
+  let userId = mainStore.userData.id;
+  // 创建的歌单
+  const userPlaylistsData = data.filter(
+    (playlist) => playlist.userId == userId
+  );
+  // 收藏的歌单
+  const favoritePlaylistsData = data.filter(
+    (playlist) => playlist.userId != userId
+  );
+
+  // 更改数据
+  userPlaylists.value.children = userPlaylistsData.map((v) => {
+    return {
+      label: () =>
+        !props.asideMenuCollapsed
+          ? h(
+              "div",
+              {
+                class: "user-pl-cover",
+                onclick: () => {
+                  router.push({
+                    path: "/playlist",
+                    query: {
+                      id: v.id,
+                    },
+                  });
+                },
+              },
+              [
+                h(NAvatar, {
+                  src: v?.coverImgUrl,
+                  fallbackSrc: "/src/assets/image/album.jpg",
+                }),
+                h(NText, null, () => [v.name]),
+              ]
+            )
+          : h(
+              RouterLink,
+              {
+                to: {
+                  path: "/playlist",
+                  query: {
+                    id: v.id,
+                  },
+                },
+                class: "user-playlist",
+              },
+              () => [h(NText, null, () => [v.name])]
+            ),
+      key: v.id,
+      icon: !props.asideMenuCollapsed
+        ? null
+        : renderIcon("queue-music-rounded"),
+    };
+  });
+  favoritePlaylists.value.children = favoritePlaylistsData.map((v) => {
+    return {
+      label: () =>
+        !props.asideMenuCollapsed
+          ? h(
+              "div",
+              {
+                class: "user-pl-cover",
+                onclick: () => {
+                  router.push({
+                    path: "/playlist",
+                    query: {
+                      id: v.id,
+                    },
+                  });
+                },
+              },
+              [
+                h(NAvatar, {
+                  src: v?.coverImgUrl,
+                  fallbackSrc: "/src/assets/image/album.jpg",
+                }),
+                h(NText, null, () => [v.name]),
+              ]
+            )
+          : h(
+              RouterLink,
+              {
+                to: {
+                  path: "/playlist",
+                  query: {
+                    id: v.id,
+                  },
+                },
+                class: "user-playlist",
+              },
+              () => [h(NText, null, () => [v.name])]
+            ),
+      key: v.id,
+      icon: !props.asideMenuCollapsed
+        ? null
+        : renderIcon("queue-music-rounded"),
+    };
+  });
+};
+
+onMounted(async () => {
+  // 获取用户歌单
+  let data = await getUserPlaylist(mainStore.userData.id);
+  changeUserPlaylists(data.playlist);
+});
 </script>
 <template>
   <n-menu
@@ -136,6 +220,7 @@ const menuOptions = computed(() => [
     :collapsed-icon-size="22"
     :options="menuOptions"
     @contextmenu.stop
+    :default-expanded-keys="['favorite-playlists']"
   />
 </template>
 <style lang="scss" scoped>
@@ -149,6 +234,7 @@ const menuOptions = computed(() => [
         }
       }
       .n-text {
+        font-size: 12px;
         display: inline-block;
         text-overflow: ellipsis;
         overflow: hidden;
@@ -166,9 +252,9 @@ const menuOptions = computed(() => [
         align-items: center;
         .n-avatar {
           border-radius: 8px;
-          width: 34px;
-          height: 34px;
-          min-width: 34px;
+          width: 25px;
+          height: 25px;
+          min-width: 25px;
           margin-right: 12px;
         }
       }

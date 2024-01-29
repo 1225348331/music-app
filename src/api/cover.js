@@ -7,10 +7,15 @@ import { getArtist } from "@/utils/utils";
  * @param {*} id 歌单id
  * @return {*}
  */
-export async function getMusicList(id) {
+export async function getMusicList(id, limit = 100, offset = 0) {
   const res = await request({
-    url: `/playlist/track/all?id=${id}&limit=100&offset=0`,
+    url: `/playlist/track/all`,
     method: "get",
+    params: {
+      id,
+      // limit,
+      // offset,
+    },
   });
 
   let list = [];
@@ -20,6 +25,7 @@ export async function getMusicList(id) {
       name: item.name,
       artist: getArtist(item.ar),
       pic: item.al.picUrl,
+      album: item.al.name,
     });
   });
   return list;
@@ -120,4 +126,53 @@ export async function getRecommendSongs() {
   return dailySongs;
 }
 
+/**
+ * @description: 获取歌手全部歌曲
+ * @param {*} id 歌手id
+ * @return {*}
+ */
+export async function getArtistHot(id, limit = 30, offset = 0) {
+  const res = await request({
+    url: `/artist/songs`,
+    method: "get",
+    params: { id, limit, offset },
+  });
+  console.log(res.data);
 
+  return res.data;
+}
+
+/**
+ * @description: 获取专辑内容
+ * @param {*} id 专辑id
+ * @return {*}
+ */
+export async function getAlbumDetail(id) {
+  const res = await request({
+    url: `/album`,
+    method: "get",
+    params: { id },
+  });
+  console.log(res.data);
+
+  return res.data;
+}
+
+/**
+ * @description: 获取歌单描述
+ * @return {*}
+ */
+export async function getPlaylistDescription(id) {
+  const res = await request({
+    url: `/playlist/detail`,
+    method: "get",
+    params: { id },
+  });
+  // let data = {
+  //   name: res.data.playlist.name,
+  //   description: res.data.playlist.description,
+  //   pic: res.data.playlist.coverImgUrl,
+  //   backImg: res.data.playlist.backgroundCoverUrl,
+  // };
+  return res.data.playlist;
+}
