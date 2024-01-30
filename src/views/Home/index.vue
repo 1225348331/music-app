@@ -1,201 +1,154 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
-import { getUserPlaylist } from "@/api/user.js";
-import useMainStore from "@/store/index.js";
-import useMusicStore from "@/store/music.js";
-import { playMusicList, playMusic } from "@/utils/play-utils";
+import { onMounted, ref } from "vue";
+import { NH1, NH3, NText, NIcon, NGrid, NGi } from "naive-ui";
+import SvgIcon from "@/components/Global/SvgIcon.vue";
+import SpecialCover from "@/components/Cover/SpecialCover.vue";
 import { getRecommendSongs } from "@/api/cover";
-import { NScrollbar, NSkeleton, NGrid, NGi, NCard } from "naive-ui";
+import {
+  getRecommendResource,
+  getTopArtists,
+  getAlbumNewest,
+} from "@/api/recommend.js";
+import SpecialCoverCard from "@/components/Cover/SpecialCoverCard.vue";
+import PrivateFm from "@/components/player/PrivateFm.vue"; //
+import MainCover from "@/components/Cover/MainCover.vue";
+import { playMusicList } from "@/utils/play-utils";
 
-const mainStore = useMainStore();
-const musicStore = useMusicStore();
-
-const loading = ref(true);
-// 占位数量
-const loadSize = 15;
-
-// 每日推荐
-const dailyRecommend = ref([]);
-// 全部歌单
-const allCoverList = ref([]);
-// 收藏的歌单
-const collectCoverList = computed(() => {
-  return allCoverList.value.filter((item) => {
-    return item.creator.nickname != "马兜铃目";
-  });
-});
-// 创建的歌单
-const createCoverList = computed(() => {
-  return allCoverList.value.filter((item) => {
-    return item.creator.nickname == "马兜铃目";
-  });
-});
-// 播放歌单
-const playCover = (cover) => {
-  console.log(cover.id);
-  playMusicList({ id: cover.id });
+const dailySongsCoverData = {
+  name: "每日推荐",
+  desc: "根据你的音乐口味，每日更新",
 };
-// 播放歌单中的单曲
-const playCoverSong = (song, index) => {
-  // 如果当前歌单列表不是当前歌单，则替换歌单列表
-  if (musicStore.musicList != dailyRecommend.value) {
-    musicStore.musicList = dailyRecommend.value;
-  }
-  musicStore.player.currentMusicIndex = index;
-  playMusic(song);
+const likeSongsCoverData = {
+  name: "喜欢的音乐",
+  desc: "发现你独特的音乐品味",
 };
-
-const data = ref(musicStore.name)
+const recommendData = ref({
+  recommendList: {
+    name: "推荐歌单",
+    loadingNum: 12,
+    data: [],
+  },
+  artist: {
+    name: "热门歌手",
+    type: "artist",
+    loadingNum: 6,
+    data: [],
+  },
+  album: {
+    name: "新碟上架",
+    type: "album",
+    loadingNum: 12,
+    data: [],
+  },
+});
+// 播放每日推荐
+const playDailyRecommend = async () => {
+  let musicList = await getRecommendSongs();
+  playMusicList({
+    musicList,
+  });
+};
+// 播放喜欢的音乐列表
+const playLikest = async () => {
+  playMusicList({
+    id: 482916379,
+  });
+};
 
 onMounted(async () => {
-  let playlistRes = await getUserPlaylist(mainStore.userData.id);
-  allCoverList.value = playlistRes.playlist;
-  dailyRecommend.value = await getRecommendSongs();
-  loading.value = false;
+  // 推荐歌单
+  recommendData.value.recommendList.data = await getRecommendResource();
+  // 热门歌手
+  recommendData.value.artist.data = await getTopArtists();
+  // 新碟上架
+  recommendData.value.album.data = await getAlbumNewest();
 });
 </script>
+<!-- 个性推荐 -->
 <template>
-  <div class="home">
-    <div class="myPage coverList">
-      <div class="userCover">每日推荐</div>
-      <n-scrollbar class="body">
-        <n-skeleton
-          v-if="loading"
-          :repeat="15"
-          class="cover-img"
-          height="40px"
-          :sharp="false"
-          :style="{ marginBottom: '10px' }"
-        />
-        <div
-          v-else
-          class="cover"
-          v-for="(item, index) in dailyRecommend"
-          @click="playCoverSong(item, index)"
-        >
-          <div>
-            <img class="coverImg" :src="item.pic + '?param=50y50'" alt="" />
-          </div>
-          <div class="coverName">{{ item.name }}</div>
-          <div class="coverArtist">{{ item.artist }}</div>
-        </div>
-      </n-scrollbar>
+  <div class="recommend">
+    <!-- 欢迎 -->
+    <div class="greetings">
+      <n-text depth="3">开启一天的好心情 ~</n-text>
     </div>
-    <div class="coverList">
-      <div class="userCover">{{ mainStore.userData.name }}创建的歌单</div>
-      <n-scrollbar class="body">
-        <n-skeleton
-          v-if="loading"
-          :repeat="15"
-          class="cover-img"
-          height="40px"
-          :sharp="false"
-          :style="{ marginBottom: '10px' }"
-        />
-        <div
-          v-else
-          class="cover"
-          v-for="item in createCoverList"
-          @click="playCover(item)"
-        >
-          <div>
-            <img
-              class="coverImg"
-              :src="item.coverImgUrl + '?param=50y50'"
-              alt=""
-            />
-          </div>
-          <div class="coverName">{{ item.name }}</div>
-        </div>
-      </n-scrollbar>
+    <!-- 专属推荐 -->
+    <div class="rec-private">
+      <n-grid class="rec-private" cols="1" x-gap="20" y-gap="20">
+        <!-- 每日推荐 -->
+        <n-gi>
+          <SpecialCoverCard
+            :data="dailySongsCoverData"
+            :showIcon="false"
+            showDate
+            @click="playDailyRecommend"
+          />
+        </n-gi>
+        <!-- 喜欢的音乐 -->
+        <n-gi>
+          <SpecialCover :data="likeSongsCoverData" @click="playLikest" />
+        </n-gi>
+      </n-grid>
+      <PrivateFm class="rec-fm" />
     </div>
-    <div class="coverList">
-      <div class="userCover">{{ mainStore.userData.name }}收藏的歌单</div>
-      <n-scrollbar class="body">
-        <n-skeleton
-          v-if="loading"
-          :repeat="15"
-          class="cover-img"
-          height="40px"
-          :sharp="false"
-          :style="{ marginBottom: '10px' }"
-        />
-        <div
-          v-else
-          class="cover"
-          v-for="item in collectCoverList"
-          @click="playCover(item)"
-        >
-          <div>
-            <img
-              class="coverImg"
-              :src="item.coverImgUrl + '?param=50y50'"
-              alt=""
-            />
-          </div>
-          <div class="coverName">{{ item.name }}</div>
-        </div>
-      </n-scrollbar>
+    <!-- 公共推荐 -->
+    <div v-for="(item, index) in recommendData" :key="index" class="rec-public">
+      <!-- @click="item.to ? router.push(item.to) : null" -->
+      <n-h3 class="title" prefix="bar">
+        <n-text class="name">{{ item.name }}</n-text>
+        <n-icon v-if="item?.to" class="more" depth="3">
+          <SvgIcon icon="chevron-right" />
+        </n-icon>
+      </n-h3>
+      <MainCover
+        :data="item.data"
+        :type="item.type"
+        :loadingNum="item.loadingNum"
+        :columns="item.columns"
+      />
     </div>
   </div>
 </template>
-<style lang="scss">
-.home {
-  display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-around;
-  align-items: flex-start;
-
-  .coverList {
-    box-sizing: border-box;
-    height: calc(100vh - 200px);
-    width: 32%;
-    border-radius: 13px;
-    margin: 0px 5px;
-    background-color: #fff;
-    box-shadow: 0px 6px 16px 2px rgba(0, 0, 0, 0.04),
-      0px 4px 10px rgba(0, 0, 0, 0.08);
-
-    .userCover {
-      box-sizing: border-box;
-      height: 30px;
-      line-height: 30px;
-      font-size: 18px;
-      margin: 15px 0px 0px 15px;
+<style lang="scss" scoped>
+.recommend {
+  margin: 0 auto;
+  .greetings {
+    margin-bottom: 20px;
+    .welcome {
+      margin: 0;
       font-weight: bold;
     }
-
-    .n-scrollbar {
+  }
+  .title {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 2px;
+    margin-top: 28px;
+    padding-left: 16px;
+    cursor: pointer;
+    .more {
+      font-size: 26px;
+      opacity: 0;
+      transform: translateX(4px);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    &:hover {
+      .more {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  }
+  .rec-private {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    .rec-fm {
       width: 100%;
-      max-height: calc(100% - 30px);
-      --n-scrollbar-width: 0px !important;
-      .n-scrollbar-content {
-        padding: 15px;
-      }
-
-      .cover {
-        width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        cursor: pointer;
-
-        .coverImg {
-          width: 50px;
-          height: 50px;
-          border-radius: 5px;
-          box-shadow: 1px -1px 1px 1px rgb(0, 0, 0, 0.1);
-        }
-        .coverName {
-          padding-left: 20px;
-          text-align: left;
-          flex-grow: 1;
-        }
-        .coverArtist {
-          padding-left: 20px;
-          text-align: right;
-        }
-      }
+      height: 220px;
+      margin-left: 20px;
+      max-width: calc(50% - 10px);
     }
   }
 }
