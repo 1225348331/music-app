@@ -1,6 +1,6 @@
 import request from "@/utils/request.js";
 import useMusicStore from "@/store/music.js";
-import { getArtist } from "@/utils/utils";
+import { getArtist, getTrackURL } from "@/utils/utils";
 
 /**
  * @description: 获取歌单
@@ -131,15 +131,26 @@ export async function getRecommendSongs() {
  * @param {*} id 歌手id
  * @return {*}
  */
-export async function getArtistHot(id, limit = 30, offset = 0) {
+export async function getArtistSongs(id, limit, offset) {
   const res = await request({
     url: `/artist/songs`,
     method: "get",
     params: { id, limit, offset },
   });
-  console.log(res.data);
-
-  return res.data;
+  let songs = {
+    total: res.data.total,
+    list: [],
+  };
+  res.data.songs.forEach((item) => {
+    songs.list.push({
+      id: item.id,
+      name: item.name,
+      artist: getArtist(item.ar),
+      pic: getTrackURL(item.al.pic_str),
+      album: item.al.name,
+    });
+  });
+  return songs;
 }
 
 /**
@@ -160,6 +171,7 @@ export async function getAlbumDetail(id) {
 
 /**
  * @description: 获取歌单描述
+ * @param {*} id 歌单id
  * @return {*}
  */
 export async function getPlaylistDescription(id) {
@@ -168,11 +180,19 @@ export async function getPlaylistDescription(id) {
     method: "get",
     params: { id },
   });
-  // let data = {
-  //   name: res.data.playlist.name,
-  //   description: res.data.playlist.description,
-  //   pic: res.data.playlist.coverImgUrl,
-  //   backImg: res.data.playlist.backgroundCoverUrl,
-  // };
   return res.data.playlist;
+}
+
+/**
+ * @description: 获取歌手详情
+ * @param {*} id 歌手id
+ * @return {*}
+ */
+export async function getArtistDetail(id) {
+  const res = await request({
+    url: `/artist/detail`,
+    method: "get",
+    params: { id },
+  });
+  return res.data.data;
 }

@@ -3,7 +3,6 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { NGrid, NGi, NCard, NImage, NText, NIcon, NSkeleton } from "naive-ui";
 import SvgIcon from "@/components/Global/SvgIcon.vue";
-import { getMusicList, getArtistHot, getAlbumDetail } from "@/api/cover.js";
 
 const router = useRouter();
 

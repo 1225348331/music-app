@@ -11,7 +11,6 @@ export async function getRecommendResource() {
     url: `/recommend/resource`,
     method: "get",
   });
-  console.log(res.data.recommend)
   return res.data.recommend;
 }
 
@@ -28,7 +27,6 @@ export async function getTopArtists(limit = 6, offset = 0) {
       offset,
     },
   });
-  console.log(res.data.artists)
   return res.data.artists;
 }
 
@@ -41,7 +39,6 @@ export async function getAlbumNewest() {
     url: `/album/newest`,
     method: "get",
   });
-  console.log(res.data.albums)
   return res.data.albums;
 }
 

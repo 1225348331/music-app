@@ -2,11 +2,7 @@
 /* vue生态类 */
 import { computed, inject, ref, watch, onMounted } from "vue";
 import useMusicStore from "@/store/music.js";
-import {
-  NSlider,
-  NIcon,
-  NIconWrapper,
-} from "naive-ui";
+import { NSlider, NIcon, NIconWrapper, NImage } from "naive-ui";
 import {
   PlayCircleFilled,
   PauseCircleFilledFilled,
@@ -56,10 +52,11 @@ onMounted(() => {
       '--bg-img': `url(${musicStore.currentMusicInfo.pic} + ?param=700y700)`,
     }"
   >
-    <div
+    <n-image
       class="left"
-      :style="{ backgroundImage: `url(${musicStore.currentMusicInfo.pic})` }"
-    ></div>
+      :src="musicStore.currentMusicInfo.pic + '?param=700y700'"
+      preview-disabled
+    />
     <div class="right">
       <div class="name">{{ musicStore.currentMusicInfo.name }}</div>
       <div class="info">
@@ -164,9 +161,6 @@ onMounted(() => {
     width: 35vw;
     height: 35vw;
     border-radius: 5px;
-    background-image: var(--bg-img);
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
     box-shadow: 15px 15px 5px rgba(0, 0, 0, 0.3);
     @media screen and (max-width: 500px) {
       width: 35vh;

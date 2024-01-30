@@ -1,23 +1,25 @@
 <script setup name="playlist">
 /* vue生态 */
 import { onMounted, ref, reactive, h, computed } from "vue"; // vue
-import { NImage, NText, NCard, NEllipsis, NAvatar } from "naive-ui"; // UI库
-import { useRouter, useRoute } from "vue-router";
-/* api */
 import {
-  getMusicList,
-  getArtistHot,
-  getAlbumDetail,
-  getPlaylistDescription,
-} from "@/api/cover.js";
+  NImage,
+  NText,
+  NCard,
+  NEllipsis,
+  NAvatar,
+  NPagination,
+} from "naive-ui"; // UI库
+import { useRoute } from "vue-router";
+import useMusicStore from "@/store/music.js";
+/* api */
+import { getMusicList, getPlaylistDescription } from "@/api/cover.js";
 import { playMusic, playMusicList } from "@/utils/play-utils";
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 
-const router = useRouter();
+const musicStore = useMusicStore();
 const route = useRoute();
 const id = computed(() => route.query.id);
 const playListDetail = ref(null);
-// playMusicList({ id: id.value });
 // 渲染数据
 const data = ref([]);
 
@@ -25,20 +27,17 @@ const data = ref([]);
 const paginationReactive = reactive({
   page: 1, // 总共多少页
   pageCount: 5, // 总页数
-  pageSize: 30, // 一页的数量
-  prefix({ itemCount }) {
-    return `总共 ${itemCount} 首`;
-  },
+  pageSize: 20, // 一页的数量
 });
 
 // 请求数据
-function query(page, pageSize) {
+function query() {
   return new Promise((resolve) => {
-    getMusicList(id.value, pageSize, page - 1).then((res) => {
+    getMusicList(id.value).then((res) => {
       // 总共多少数据
       const total = res.length;
       // 总共多少页数
-      const pageCount = Math.ceil(total / pageSize);
+      const pageCount = Math.ceil(total / paginationReactive.pageSize);
       resolve({
         pageCount,
         data: res,
@@ -48,60 +47,46 @@ function query(page, pageSize) {
   });
 }
 
-// 分页处理
-const handlePageChange = (currentPage) => {
-  if (!loadingRef.value) {
-    loadingRef.value = true;
-    query(currentPage, paginationReactive.pageSize).then((data) => {
-      data.value = data.data;
-      paginationReactive.page = currentPage;
-      paginationReactive.pageCount = data.pageCount;
-      paginationReactive.itemCount = data.total;
-      loadingRef.value = false;
-    });
-  }
+/* 处理分页 */
+const handlePage = (page) => {
+  paginationReactive.page = page;
 };
 
 // 点击事件
-const rowProps = (row) => {
-  return {
-    style: "cursor:pointer",
-    onClick: async () => {
-      await playMusic(row);
-    },
-  };
+const handleClick = (song, index) => {
+  musicStore.player.currentMusicIndex =
+    (paginationReactive.page - 1) * paginationReactive.pageSize + index;
+  playMusic(song);
 };
 
 onMounted(async () => {
-  query(paginationReactive.page, paginationReactive.pageSize).then((res) => {
+  query().then((res) => {
     data.value = res.data;
     paginationReactive.pageCount = res.pageCount;
     paginationReactive.itemCount = res.total;
   });
+  // 获取歌单描述
   playListDetail.value = await getPlaylistDescription(id.value);
 });
 </script>
 <template>
   <div class="cloud">
     <div class="header">
+      <!-- 封面 -->
       <div class="cover">
-        <!-- 封面 -->
         <n-image
           class="cover-img"
           :src="playListDetail?.coverImgUrl"
           preview-disabled
         />
-        <!-- 封面背板 -->
-        <n-images
-          :src="playListDetail?.backgroundCoverUrl"
-          class="cover-shadow"
-          preview-disabled
-        />
       </div>
+      <!-- 歌单详情 -->
       <div class="data">
+        <!-- 歌单名称 -->
         <n-text class="name">
           {{ playListDetail?.name }}
         </n-text>
+        <!-- 歌单创建者 -->
         <div class="creator">
           <n-avatar
             :src="
@@ -124,6 +109,7 @@ onMounted(async () => {
             {{ dayjs(playListDetail?.createTime).format("YYYY/MM/DD") }} 创建
           </n-text>
         </div>
+        <!-- 歌单简介 -->
         <n-ellipsis
           class="description"
           expand-trigger="click"
@@ -134,8 +120,12 @@ onMounted(async () => {
         </n-ellipsis>
       </div>
     </div>
+    <!-- 歌单列表 -->
     <n-card
-      v-for="(item, index) in data"
+      v-for="(item, index) in data.slice(
+        (paginationReactive.page - 1) * paginationReactive.pageSize,
+        paginationReactive.page * paginationReactive.pageSize
+      )"
       :id="'song-list-' + index"
       :key="index"
       :content-style="{
@@ -147,7 +137,7 @@ onMounted(async () => {
       }"
       class="songs"
       hoverable
-      @click="checkCanClick(data, item, songsIndex + index)"
+      @click="handleClick(item, index)"
     >
       <!-- 序号 -->
       <n-text class="num" depth="3">
@@ -209,6 +199,12 @@ onMounted(async () => {
       </n-text>
       <n-text v-else class="album hidden">未知专辑</n-text>
     </n-card>
+    <!-- 分页 -->
+    <n-pagination
+      v-model:page="paginationReactive.page"
+      :page-count="paginationReactive.pageCount"
+      :on-update:page="handlePage"
+    />
   </div>
 </template>
 <style lang="scss">
@@ -335,170 +331,145 @@ onMounted(async () => {
       }
     }
   }
-}
-</style>
-<style lang="scss">
-.songs {
-  border-radius: 8px;
-  margin-bottom: 12px;
-  transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
-  cursor: pointer;
-  .cover {
-    width: 50px;
-    height: 50px;
-    min-width: 50px;
-    border-radius: 8px;
-    margin-right: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    .cover-img {
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      transition: filter 0.3s, transform 0.3s;
-      :deep(img) {
-        width: 100%;
-        opacity: 0;
-        transition: opacity 0.35s ease-in-out;
-      }
-    }
+
+  .n-pagination {
+    margin: 0 auto;
   }
-  .num {
-    width: 30px;
-    height: 30px;
-    min-width: 30px;
+
+  .songs {
     border-radius: 8px;
-    margin-right: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-right: 20px;
-    .title {
+    margin-bottom: 12px;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+
+    .num {
+      width: 30px;
+      height: 30px;
+      min-width: 30px;
+      border-radius: 8px;
+      margin-right: 16px;
       display: flex;
       align-items: center;
-      flex-direction: row;
-      .name {
-        font-size: 16px;
-        font-weight: bold;
-        transition: color 0.3s;
-        -webkit-line-clamp: 2;
-        &:hover {
-          color: var(--main-color);
-        }
-      }
-      .n-tag {
-        margin-left: 8px;
-        height: 18px;
-        &.cloud {
-          padding: 0 10px;
-          align-items: center;
-          justify-content: center;
-          :deep(.n-tag__icon) {
-            margin-right: 0;
-            width: 100%;
-          }
-        }
-        &.mv {
-          cursor: pointer;
-        }
-      }
+      justify-content: center;
     }
-    .artist {
-      margin-top: 2px;
-      font-size: 13px;
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 1;
+    .cover {
+      width: 50px;
+      height: 50px;
+      min-width: 50px;
+      border-radius: 8px;
+      margin-right: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       overflow: hidden;
-      word-break: break-all;
-      .ar {
-        display: inline-flex;
-        transition: opacity 0.3s;
-        opacity: 0.6;
-        cursor: pointer;
-        &::after {
-          content: "/";
-          margin: 0 4px;
+      .cover-img {
+        width: 100%;
+        height: 100%;
+        z-index: 1;
+        transition: filter 0.3s, transform 0.3s;
+        :deep(img) {
+          width: 100%;
+          opacity: 0;
+          transition: opacity 0.35s ease-in-out;
         }
-        &:last-child {
-          &::after {
-            display: none;
+      }
+    }
+    .info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-right: 20px;
+      .title {
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        .name {
+          font-size: 16px;
+          font-weight: bold;
+          transition: color 0.3s;
+          -webkit-line-clamp: 2;
+          &:hover {
+            color: var(--main-color);
           }
         }
-        &:hover {
-          opacity: 0.8;
+        .n-tag {
+          margin-left: 8px;
+          height: 18px;
+          &.cloud {
+            padding: 0 10px;
+            align-items: center;
+            justify-content: center;
+            :deep(.n-tag__icon) {
+              margin-right: 0;
+              width: 100%;
+            }
+          }
+          &.mv {
+            cursor: pointer;
+          }
         }
       }
+      .artist {
+        margin-top: 2px;
+        font-size: 13px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 1;
+        overflow: hidden;
+        word-break: break-all;
+        .ar {
+          display: inline-flex;
+          transition: opacity 0.3s;
+          opacity: 0.6;
+          cursor: pointer;
+          &::after {
+            content: "/";
+            margin: 0 4px;
+          }
+          &:last-child {
+            &::after {
+              display: none;
+            }
+          }
+          &:hover {
+            opacity: 0.8;
+          }
+        }
+      }
+      .alia {
+        margin-top: 2px;
+        font-size: 12px;
+        opacity: 0.8;
+      }
     }
-    .alia {
-      margin-top: 2px;
-      font-size: 12px;
-      opacity: 0.8;
-    }
-  }
-  .album {
-    flex: 1;
-    padding-right: 20px;
-    transition: color 0.3s;
-    -webkit-line-clamp: 2;
-    &:hover {
-      color: var(--main-color);
-    }
-  }
-  .action {
-    width: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-evenly;
-    .favorite {
-      padding-top: 1px;
-      transition: transform 0.3s;
-      cursor: pointer;
+    .album {
+      flex: 1;
+      padding-right: 20px;
+      transition: color 0.3s;
+      -webkit-line-clamp: 2;
       &:hover {
-        transform: scale(1.15);
-      }
-      &:active {
-        transform: scale(1);
+        color: var(--main-color);
       }
     }
-    .more {
-      display: none;
-    }
-  }
-  .update {
-    width: 80px;
-    text-align: center;
-  }
-  .count {
-    width: 120px;
-    text-align: center;
-  }
-  .duration {
-    width: 50px;
-    text-align: center;
-  }
-  .size {
-    width: 80px;
-    text-align: right;
-  }
-  &.play {
-    background-color: var(--main-second-color);
-    border-color: var(--main-color);
-    a,
-    span,
-    .play {
-      color: var(--main-color) !important;
-    }
-    .artist {
-      .ar {
+    &.play {
+      background-color: var(--main-second-color);
+      border-color: var(--main-color);
+      a,
+      span,
+      .play {
+        color: var(--main-color) !important;
+      }
+      .artist {
+        .ar {
+          opacity: 0.8;
+          transition: opacity 0.3s;
+          &:hover {
+            opacity: 1;
+          }
+        }
+      }
+      .album {
         opacity: 0.8;
         transition: opacity 0.3s;
         &:hover {
@@ -506,25 +477,18 @@ onMounted(async () => {
         }
       }
     }
-    .album {
-      opacity: 0.8;
-      transition: opacity 0.3s;
-      &:hover {
-        opacity: 1;
-      }
+    &:last-child {
+      margin-bottom: 0;
     }
-  }
-  &:last-child {
-    margin-bottom: 0;
-  }
-  &:hover {
-    border-color: var(--main-color);
-    box-shadow: 0 1px 2px -2px var(--main-boxshadow-color),
-      0 3px 6px 0 var(--main-boxshadow-color),
-      0 5px 12px 4px var(--main-boxshadow-hover-color);
-  }
-  &:active {
-    transform: scale(0.995);
+    &:hover {
+      border-color: var(--main-color);
+      box-shadow: 0 1px 2px -2px var(--main-boxshadow-color),
+        0 3px 6px 0 var(--main-boxshadow-color),
+        0 5px 12px 4px var(--main-boxshadow-hover-color);
+    }
+    &:active {
+      transform: scale(0.995);
+    }
   }
 }
 </style>

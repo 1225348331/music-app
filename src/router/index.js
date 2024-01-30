@@ -55,7 +55,18 @@ let routes = [
     path: "/playlist",
     name: "playlist",
     component: () => import("@/views/List/playlist.vue"),
-    // component: () => import("@/views/Cloud/test.vue"),
+  },
+  {
+    // 歌手介绍
+    path: "/artist",
+    name: "artist",
+    component: () => import("@/views/List/artist.vue"),
+  },
+  {
+    // 新碟上架
+    path: "/album",
+    name: "album",
+    component: () => import("@/views/List/album.vue"),
   },
 ];
 
