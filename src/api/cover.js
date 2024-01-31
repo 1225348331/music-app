@@ -164,8 +164,6 @@ export async function getAlbumDetail(id) {
     method: "get",
     params: { id },
   });
-  console.log(res.data);
-
   return res.data;
 }
 

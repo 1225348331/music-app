@@ -21,7 +21,7 @@ const playPrivateFm = async () => {
     playMusicList({
       musicList: musicStore.FMList,
     });
-    musicStore.player.playType = 2
+    musicStore.player.playType = 2;
   } else {
     musicStore.audioPlayer.play();
   }
@@ -91,12 +91,7 @@ onMounted(async () => {
               {{ musicStore.FMList[0]?.artist || "未知艺术家" }}
             </div>
           </div>
-          <div
-            class="album"
-            @click.stop="
-              router.push(`/album?id=${musicStore.FMList[0]?.album.id}`)
-            "
-          >
+          <div class="album">
             <n-icon depth="3" size="20">
               <SvgIcon icon="album" />
             </n-icon>
@@ -122,7 +117,9 @@ onMounted(async () => {
           >
             <template #icon>
               <n-icon
-                v-if="!musicStore.player.isPlay || musicStore.player.playType != 2"
+                v-if="
+                  !musicStore.player.isPlay || musicStore.player.playType != 2
+                "
                 size="32"
                 @click="playPrivateFm"
               >

@@ -15,6 +15,7 @@ import useMusicStore from "@/store/music.js";
 import { getAlbumDetail, getPlaylistDescription } from "@/api/cover.js";
 import { playMusic, playMusicList } from "@/utils/play-utils";
 import dayjs from "dayjs";
+import { getArtist } from "@/utils/utils.js";
 
 const musicStore = useMusicStore();
 const route = useRoute();
@@ -22,13 +23,25 @@ const id = computed(() => route.query.id);
 const albumDetail = ref(null);
 // 渲染数据
 const data = ref([]);
+// 是否是当前歌单
+const isThisPlayList = computed(() => musicStore.musicList == data.value);
 
 // 请求数据
 function query() {
   return new Promise((resolve) => {
     getAlbumDetail(id.value).then((res) => {
+      let formatData = [];
+      res.songs.forEach((item) => {
+        formatData.push({
+          id: item.id,
+          name: item.name,
+          artist: getArtist(item.ar),
+          pic: item.al.picUrl,
+          album: item.al.name,
+        });
+      });
       resolve({
-        data: res.songs,
+        data: formatData,
         description: res.album,
       });
     });
@@ -37,6 +50,7 @@ function query() {
 
 // 点击事件
 const handleClick = (song, index) => {
+  if (!isThisPlayList.value) musicStore.musicList = data.value;
   musicStore.player.currentMusicIndex = index;
   playMusic(song);
 };
@@ -108,6 +122,11 @@ onMounted(async () => {
         justifyContent: 'space-between',
       }"
       class="songs"
+      :class="
+        (musicStore.player.currentMusicIndex == index) & isThisPlayList
+          ? 'songPlay'
+          : ''
+      "
       hoverable
       @click="handleClick(item, index)"
     >
@@ -118,7 +137,7 @@ onMounted(async () => {
       <!-- 封面 -->
       <div class="cover">
         <n-image
-          :src="item.al.picUrl + '?param=45y45'"
+          :src="item.pic + '?param=45y45'"
           class="cover-img"
           preview-disabled
           lazy
@@ -148,24 +167,16 @@ onMounted(async () => {
           </n-text>
         </div>
         <!-- 歌手 -->
-        <div v-if="Array.isArray(item.ar)" class="artist">
-          <n-text v-for="ar in item.ar" :key="ar.id" class="ar">
-            {{ ar.name }}
-          </n-text>
-        </div>
-        <div v-else class="artist">
-          <n-text class="ar" @dblclick.stop>
+        <div class="artist">
+          <n-text class="ar">
             {{ item.artist || "未知艺术家" }}
           </n-text>
         </div>
       </div>
       <!-- 专辑 -->
-      <n-text v-if="item.al" class="album hidden">
-        {{
-          typeof item.al === "object" ? item.al?.name || "未知专辑" : item.al
-        }}
+      <n-text class="album hidden">
+        {{ item.album || "未知专辑" }}
       </n-text>
-      <n-text v-else class="album hidden">未知专辑</n-text>
     </n-card>
   </div>
 </template>
@@ -443,7 +454,7 @@ onMounted(async () => {
       margin-bottom: 0;
     }
     &:hover {
-      border-color: var(--main-color);
+      border: 1px dashed black;
       box-shadow: 0 1px 2px -2px var(--main-boxshadow-color),
         0 3px 6px 0 var(--main-boxshadow-color),
         0 5px 12px 4px var(--main-boxshadow-hover-color);
@@ -451,6 +462,10 @@ onMounted(async () => {
     &:active {
       transform: scale(0.995);
     }
+  }
+
+  .songPlay {
+    border: 1px dashed red;
   }
 }
 </style>
