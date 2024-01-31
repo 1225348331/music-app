@@ -1,6 +1,6 @@
 <script setup name="playlist">
 /* vue生态 */
-import { onMounted, ref, reactive, h, computed } from "vue"; // vue
+import { onMounted, ref, reactive, h, computed, watch } from "vue"; // vue
 import {
   NImage,
   NText,
@@ -11,6 +11,8 @@ import {
 } from "naive-ui"; // UI库
 import { useRoute } from "vue-router";
 import useMusicStore from "@/store/music.js";
+/* 组件 */
+import Loading from "@/components/Loading/index.vue";
 /* api */
 import { getMusicList, getPlaylistDescription } from "@/api/cover.js";
 import { playMusic, playMusicList } from "@/utils/play-utils";
@@ -22,13 +24,16 @@ const id = computed(() => route.query.id);
 const playListDetail = ref(null);
 // 渲染数据
 const data = ref([]);
-
+// 是否是当前歌单
+const isThisPlayList = computed(() => musicStore.musicList == data.value);
 // 分页数据
 const paginationReactive = reactive({
   page: 1, // 总共多少页
   pageCount: 5, // 总页数
   pageSize: 20, // 一页的数量
 });
+
+const isLoading = ref(true);
 
 // 请求数据
 function query() {
@@ -47,6 +52,26 @@ function query() {
   });
 }
 
+watch(
+  () => id.value,
+  async () => {
+    if (id.value) {
+      isLoading.value = true;
+      query().then((res) => {
+        isLoading.value = false;
+        data.value = res.data;
+        paginationReactive.pageCount = res.pageCount;
+        paginationReactive.itemCount = res.total;
+      });
+      // 获取歌单描述
+      playListDetail.value = await getPlaylistDescription(id.value);
+    }
+  },
+  {
+    immediate: true,
+  }
+);
+
 /* 处理分页 */
 const handlePage = (page) => {
   paginationReactive.page = page;
@@ -54,161 +79,161 @@ const handlePage = (page) => {
 
 // 点击事件
 const handleClick = (song, index) => {
+  if (!isThisPlayList.value) musicStore.musicList = data.value;
   musicStore.player.currentMusicIndex =
     (paginationReactive.page - 1) * paginationReactive.pageSize + index;
   playMusic(song);
 };
-
-onMounted(async () => {
-  query().then((res) => {
-    data.value = res.data;
-    paginationReactive.pageCount = res.pageCount;
-    paginationReactive.itemCount = res.total;
-  });
-  // 获取歌单描述
-  playListDetail.value = await getPlaylistDescription(id.value);
-});
 </script>
 <template>
-  <div class="cloud">
-    <div class="header">
-      <!-- 封面 -->
-      <div class="cover">
-        <n-image
-          class="cover-img"
-          :src="playListDetail?.coverImgUrl"
-          preview-disabled
-        />
-      </div>
-      <!-- 歌单详情 -->
-      <div class="data">
-        <!-- 歌单名称 -->
-        <n-text class="name">
-          {{ playListDetail?.name }}
-        </n-text>
-        <!-- 歌单创建者 -->
-        <div class="creator">
-          <n-avatar
-            :src="
-              (playListDetail?.creator?.avatarUrl + '?param=300y$300').replace(
-                /^http:/,
-                'https:'
-              )
-            "
-            fallback-src="/src/assets/image/avatar.jpg"
-            round
+  <div>
+    <Loading v-if="isLoading" />
+    <div class="playlist" v-if="!isLoading">
+      <div class="header">
+        <!-- 封面 -->
+        <div class="cover">
+          <n-image
+            class="cover-img"
+            :src="playListDetail?.coverImgUrl"
+            preview-disabled
           />
-          <n-text class="nickname">{{
-            playListDetail?.creator?.nickname || "未知创建者"
-          }}</n-text>
-          <n-text
-            v-if="playListDetail?.createTime"
-            class="create-time"
-            depth="3"
+        </div>
+        <!-- 歌单详情 -->
+        <div class="data">
+          <!-- 歌单名称 -->
+          <n-text class="name">
+            {{ playListDetail?.name }}
+          </n-text>
+          <!-- 歌单创建者 -->
+          <div class="creator">
+            <n-avatar
+              :src="
+                (
+                  playListDetail?.creator?.avatarUrl + '?param=300y$300'
+                ).replace(/^http:/, 'https:')
+              "
+              fallback-src="/src/assets/image/avatar.jpg"
+              round
+            />
+            <n-text class="nickname">{{
+              playListDetail?.creator?.nickname || "未知创建者"
+            }}</n-text>
+            <n-text
+              v-if="playListDetail?.createTime"
+              class="create-time"
+              depth="3"
+            >
+              {{ dayjs(playListDetail?.createTime).format("YYYY/MM/DD") }} 创建
+            </n-text>
+          </div>
+          <!-- 歌单简介 -->
+          <n-ellipsis
+            class="description"
+            expand-trigger="click"
+            :tooltip="false"
+            :line-clamp="2"
           >
-            {{ dayjs(playListDetail?.createTime).format("YYYY/MM/DD") }} 创建
-          </n-text>
+            {{ playListDetail?.description }}
+          </n-ellipsis>
         </div>
-        <!-- 歌单简介 -->
-        <n-ellipsis
-          class="description"
-          expand-trigger="click"
-          :tooltip="false"
-          :line-clamp="2"
-        >
-          {{ playListDetail?.description }}
-        </n-ellipsis>
       </div>
+      <!-- 歌单列表 -->
+      <n-card
+        v-for="(item, index) in data.slice(
+          (paginationReactive.page - 1) * paginationReactive.pageSize,
+          paginationReactive.page * paginationReactive.pageSize
+        )"
+        :id="'song-list-' + index"
+        :key="index"
+        :content-style="{
+          padding: '16px',
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }"
+        class="songs"
+        :class="
+          (musicStore.player.currentMusicIndex == index) & isThisPlayList
+            ? 'songPlay'
+            : ''
+        "
+        hoverable
+        @click="handleClick(item, index)"
+      >
+        <!-- 序号 -->
+        <n-text class="num" depth="3">
+          {{ index + 1 }}
+        </n-text>
+        <!-- 封面 -->
+        <div class="cover">
+          <n-image
+            :src="item.pic + '?param=45y45'"
+            class="cover-img"
+            preview-disabled
+            lazy
+            @load="
+              (e) => {
+                e.target.style.opacity = 1;
+              }
+            "
+          >
+            <template #placeholder>
+              <div class="cover-loading">
+                <img
+                  class="loading-img"
+                  src="/src/assets/image/song.jpg"
+                  alt="song"
+                />
+              </div>
+            </template>
+          </n-image>
+        </div>
+        <!-- 信息 -->
+        <div class="info">
+          <div class="title">
+            <!-- 名称 -->
+            <n-text class="name" depth="2">
+              {{ item?.name || "未知曲目" }}
+            </n-text>
+          </div>
+          <!-- 歌手 -->
+          <div v-if="Array.isArray(item.artist)" class="artist">
+            <n-text v-for="ar in item.artists" :key="ar.id" class="ar">
+              {{ ar.name }}
+            </n-text>
+          </div>
+          <div v-else class="artist">
+            <n-text class="ar" @dblclick.stop>
+              {{ item.artist || "未知艺术家" }}
+            </n-text>
+          </div>
+          <!-- 别名 -->
+          <n-text v-if="item.alia" class="alia" depth="3">{{
+            item.alia
+          }}</n-text>
+        </div>
+        <!-- 专辑 -->
+        <n-text v-if="item.album" class="album hidden">
+          {{
+            typeof item.album === "object"
+              ? item.album?.name || "未知专辑"
+              : item.album
+          }}
+        </n-text>
+        <n-text v-else class="album hidden">未知专辑</n-text>
+      </n-card>
+      <!-- 分页 -->
+      <n-pagination
+        v-model:page="paginationReactive.page"
+        :page-count="paginationReactive.pageCount"
+        :on-update:page="handlePage"
+      />
     </div>
-    <!-- 歌单列表 -->
-    <n-card
-      v-for="(item, index) in data.slice(
-        (paginationReactive.page - 1) * paginationReactive.pageSize,
-        paginationReactive.page * paginationReactive.pageSize
-      )"
-      :id="'song-list-' + index"
-      :key="index"
-      :content-style="{
-        padding: '16px',
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }"
-      class="songs"
-      hoverable
-      @click="handleClick(item, index)"
-    >
-      <!-- 序号 -->
-      <n-text class="num" depth="3">
-        {{ index + 1 }}
-      </n-text>
-      <!-- 封面 -->
-      <div class="cover">
-        <n-image
-          :src="item.pic + '?param=45y45'"
-          class="cover-img"
-          preview-disabled
-          lazy
-          @load="
-            (e) => {
-              e.target.style.opacity = 1;
-            }
-          "
-        >
-          <template #placeholder>
-            <div class="cover-loading">
-              <img
-                class="loading-img"
-                src="/src/assets/image/song.jpg"
-                alt="song"
-              />
-            </div>
-          </template>
-        </n-image>
-      </div>
-      <!-- 信息 -->
-      <div class="info">
-        <div class="title">
-          <!-- 名称 -->
-          <n-text class="name" depth="2">
-            {{ item?.name || "未知曲目" }}
-          </n-text>
-        </div>
-        <!-- 歌手 -->
-        <div v-if="Array.isArray(item.artist)" class="artist">
-          <n-text v-for="ar in item.artists" :key="ar.id" class="ar">
-            {{ ar.name }}
-          </n-text>
-        </div>
-        <div v-else class="artist">
-          <n-text class="ar" @dblclick.stop>
-            {{ item.artist || "未知艺术家" }}
-          </n-text>
-        </div>
-        <!-- 别名 -->
-        <n-text v-if="item.alia" class="alia" depth="3">{{ item.alia }}</n-text>
-      </div>
-      <!-- 专辑 -->
-      <n-text v-if="item.album" class="album hidden">
-        {{
-          typeof item.album === "object"
-            ? item.album?.name || "未知专辑"
-            : item.album
-        }}
-      </n-text>
-      <n-text v-else class="album hidden">未知专辑</n-text>
-    </n-card>
-    <!-- 分页 -->
-    <n-pagination
-      v-model:page="paginationReactive.page"
-      :page-count="paginationReactive.pageCount"
-      :on-update:page="handlePage"
-    />
   </div>
 </template>
 <style lang="scss">
-.cloud {
+.playlist {
   display: flex;
   flex-flow: column wrap;
   justify-content: flex-start;
@@ -481,7 +506,7 @@ onMounted(async () => {
       margin-bottom: 0;
     }
     &:hover {
-      border-color: var(--main-color);
+      border: 1px dashed black;
       box-shadow: 0 1px 2px -2px var(--main-boxshadow-color),
         0 3px 6px 0 var(--main-boxshadow-color),
         0 5px 12px 4px var(--main-boxshadow-hover-color);
@@ -489,6 +514,10 @@ onMounted(async () => {
     &:active {
       transform: scale(0.995);
     }
+  }
+
+  .songPlay {
+    border: 1px dashed red;
   }
 }
 </style>

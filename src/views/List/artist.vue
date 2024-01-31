@@ -13,7 +13,7 @@ import { useRoute } from "vue-router";
 import useMusicStore from "@/store/music.js";
 /* api */
 import { getArtistSongs, getArtistDetail } from "@/api/cover.js";
-import { playMusic } from "@/utils/play-utils";
+import { playMusic, playMusicList } from "@/utils/play-utils";
 
 const musicStore = useMusicStore();
 const route = useRoute();
@@ -21,12 +21,14 @@ const id = computed(() => route.query.id);
 const artistDetail = ref(null);
 // 渲染数据
 const data = ref([]);
+// 是否是当前歌单
+const isThisPlayList = computed(() => musicStore.musicList == data.value);
 
 // 分页数据
 const paginationReactive = reactive({
   page: 1, // 总共多少页
   pageCount: 5, // 总页数
-  pageSize: 20, // 一页的数量
+  pageSize: 50, // 一页的数量
 });
 
 // 请求数据
@@ -60,8 +62,8 @@ const handlePage = (page) => {
 
 // 点击事件
 const handleClick = (song, index) => {
-  musicStore.player.currentMusicIndex =
-    (paginationReactive.page - 1) * paginationReactive.pageSize + index;
+  if (!isThisPlayList.value) musicStore.musicList = data.value;
+  musicStore.player.currentMusicIndex = index;
   playMusic(song);
 };
 
@@ -126,6 +128,11 @@ onMounted(async () => {
         justifyContent: 'space-between',
       }"
       class="songs"
+      :class="
+        (musicStore.player.currentMusicIndex == index) & isThisPlayList
+          ? 'songPlay'
+          : ''
+      "
       hoverable
       @click="handleClick(item, index)"
     >
@@ -486,6 +493,10 @@ onMounted(async () => {
     &:active {
       transform: scale(0.995);
     }
+  }
+
+  .songPlay {
+    border: 1px dashed red;
   }
 }
 </style>
