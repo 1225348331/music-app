@@ -17,8 +17,17 @@ import "element-plus/es/components/dialog/style/css";
 /* 工具类 */
 import { playPreIndex, playNextIndex } from "@/utils/play-utils";
 import { formatTime } from "@/utils/utils";
+import ColorThief from "colorthief";
 
 const musicStore = useMusicStore();
+const colorThief = new ColorThief();
+let backgroundColor = ref([40, 50, 59]);
+let bgColor = computed(() => {
+  console.log(
+    `rgb(${backgroundColor.value[0]},${backgroundColor.value[1]},${backgroundColor.value[2]})`
+  );
+  return `rgb(${backgroundColor.value[0]},${backgroundColor.value[1]},${backgroundColor.value[2]})`;
+});
 
 // 歌词滚动距离
 const lyricHeight = ref(80);
@@ -39,6 +48,22 @@ const formatTooltip = (value) => {
   return formatTime(value);
 };
 
+watch(
+  () => musicStore.currentMusicInfo.pic,
+  () => {
+    // let img = document.createElement("img");
+    let img = new Image();
+    img.src = musicStore.currentMusicInfo.pic + "?param=700y700";
+    img.setAttribute("crossOrigin", "");
+    img.addEventListener("load", function () {
+      backgroundColor.value = colorThief.getColor(img);
+    });
+  },
+  {
+    immediate: true,
+  }
+);
+
 onMounted(() => {
   if (document.body.clientWidth < 500) {
     lyricHeight.value = 40;
@@ -49,10 +74,11 @@ onMounted(() => {
   <div
     class="music-app"
     :style="{
-      '--bg-img': `url(${musicStore.currentMusicInfo.pic} + ?param=700y700)`,
+      '--bg-color': `${bgColor}`,
     }"
   >
     <n-image
+      id="bigImage"
       class="left"
       :src="musicStore.currentMusicInfo.pic + '?param=700y700'"
       preview-disabled
@@ -138,24 +164,25 @@ onMounted(() => {
   width: 100vw;
   height: 100vh;
   z-index: 1;
+  background-color: var(--bg-color);
 
   @media screen and (max-width: 500px) {
     flex-flow: column wrap;
   }
-  &::before {
-    content: "";
-    position: absolute;
-    box-sizing: border-box;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    background-image: url("@/assets/image/1.jpg");
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    filter: blur(5px);
-    z-index: -1;
-  }
+  // &::before {
+  //   content: "";
+  //   position: absolute;
+  //   box-sizing: border-box;
+  //   width: 100%;
+  //   height: 100%;
+  //   top: 0;
+  //   left: 0;
+  //   // background-image: linear-gradient(to top, #989898 0%, var(--bg-color) 100%);
+  //   background-color: var(--bg-color);
+  //   // opacity: 0.5;
+  //   // filter: blur(5px);
+  //   z-index: -1;
+  // }
 
   .left {
     width: 35vw;
@@ -171,7 +198,20 @@ onMounted(() => {
     height: 35vw;
     width: 45vw;
     text-align: center;
-    color: #fff;
+    // color: rgb(
+    //   from var(--bg-color) calc(1 - r) calc(1 - g) calc(1 - b)
+    // ); /** 基于背景反转颜色 **/
+
+    // color: var(--bg-color);
+
+    // color: #000;
+
+    // 基于背景色自适应文字颜色
+    // background-color: var(--bg-color);
+    // color: #000;
+    // color: #000;
+    background-color: var(--bg-color);
+    // mix-blend-mode: screen;
     display: flex;
     flex-flow: column nowrap;
     justify-content: space-between;
@@ -225,7 +265,6 @@ onMounted(() => {
           line-height: 60px;
           font-size: 24px;
           margin: 10px 0px;
-          color: rgb(185, 175, 193);
           @media screen and (max-width: 500px) {
             height: 30px;
             line-height: 30px;
@@ -234,7 +273,6 @@ onMounted(() => {
           }
         }
         .currrentLyr {
-          color: #fff;
           font-size: 40px !important;
           white-space: nowrap;
           overflow: hidden;

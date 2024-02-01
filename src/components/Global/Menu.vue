@@ -3,7 +3,7 @@ import { ref, h, computed, onMounted } from "vue";
 import { useRouter, RouterLink } from "vue-router";
 import { NIcon, NMenu, NButton, NAvatar, NText } from "naive-ui";
 import SvgIcon from "@/components/Global/SvgIcon.vue";
-import { getUserPlaylist } from "@/api/user.js";
+import { getUserPlaylist, getUserAccount } from "@/api/user.js";
 import useMainStore from "@/store/index";
 import { ConsoleSqlOutlined } from "@vicons/antd";
 
@@ -47,12 +47,12 @@ const menuOptions = computed(() => [
         RouterLink,
         {
           to: {
-            name: "Recommend",
+            name: "Home",
           },
         },
         () => ["发现音乐"]
       ),
-    key: "Recommend",
+    key: "Home",
     icon: renderIcon("discover-fill", "#b22c00"),
   },
   {
@@ -102,16 +102,16 @@ const changeUserPlaylists = (data) => {
   // 用户ID
   let userId = mainStore.userData.id;
   // 创建的歌单
-  const userPlaylistsData = data.filter(
+  const userPlaylistsData = data?.filter(
     (playlist) => playlist.userId == userId
   );
   // 收藏的歌单
-  const favoritePlaylistsData = data.filter(
+  const favoritePlaylistsData = data?.filter(
     (playlist) => playlist.userId != userId
   );
 
   // 更改数据
-  userPlaylists.value.children = userPlaylistsData.map((v) => {
+  userPlaylists.value.children = userPlaylistsData?.map((v) => {
     return {
       label: () =>
         !props.asideMenuCollapsed
@@ -155,7 +155,7 @@ const changeUserPlaylists = (data) => {
         : renderIcon("queue-music-rounded"),
     };
   });
-  favoritePlaylists.value.children = favoritePlaylistsData.map((v) => {
+  favoritePlaylists.value.children = favoritePlaylistsData?.map((v) => {
     return {
       label: () =>
         !props.asideMenuCollapsed
@@ -202,6 +202,15 @@ const changeUserPlaylists = (data) => {
 };
 
 onMounted(async () => {
+  if (!mainStore.userData.id) {
+    let res = await getUserAccount();
+    mainStore.userData.avatarUrl = res.profile.avatarUrl;
+    mainStore.userData.backgroundUrl = res.profile.backgroundUrl;
+    mainStore.userData.name = res.profile.nickname;
+    mainStore.userData.id = res.profile.userId;
+    mainStore.userData.signature = res.profile.signature;
+  }
+  console.log(mainStore.userData.id);
   // 获取用户歌单
   let data = await getUserPlaylist(mainStore.userData.id);
   changeUserPlaylists(data.playlist);

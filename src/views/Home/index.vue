@@ -13,6 +13,9 @@ import SpecialCoverCard from "@/components/Cover/SpecialCoverCard.vue";
 import PrivateFm from "@/components/player/PrivateFm.vue"; //
 import MainCover from "@/components/Cover/MainCover.vue";
 import { playMusicList } from "@/utils/play-utils";
+import useUserStore from "@/store/index";
+
+const userStore = useUserStore();
 
 const dailySongsCoverData = {
   name: "每日推荐",
@@ -51,7 +54,7 @@ const playDailyRecommend = async () => {
 // 播放喜欢的音乐列表
 const playLikest = async () => {
   playMusicList({
-    id: 482916379,
+    id: userStore.userData.id ? userStore.userData.id : 482916379,
   });
 };
 
