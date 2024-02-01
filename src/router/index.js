@@ -2,29 +2,15 @@ import { createRouter, createWebHistory } from "vue-router";
 import "element-plus/es/components/notification/style/css";
 import { ElNotification } from "element-plus";
 import useMainStore from "../store";
-import { getUserAccount } from "@/api/user.js";
+
 
 // 路由信息
 let routes = [
   {
+    // 发现音乐
     path: "/",
     name: "Home",
-    // component: () => import("@/views/Test.vue"),
     component: () => import("@/views/Home/index.vue"),
-    beforeEnter: async (to, from) => {
-      const userStore = useMainStore();
-      if (!userStore.userData.id) {
-        let res = await getUserAccount();
-        console.log(res);
-        userStore.userData.avatarUrl = res.profile.avatarUrl;
-        userStore.userData.backgroundUrl = res.profile.backgroundUrl;
-        userStore.userData.name = res.profile.nickname;
-        userStore.userData.id = res.profile.userId;
-        userStore.userData.signature = res.profile.signature;
-      }
-      // reject the navigation
-      return true;
-    },
   },
   {
     // 登录
@@ -77,7 +63,7 @@ const router = createRouter({
 });
 
 // 检验是否登录
-router.beforeEach((to, from) => {
+router.beforeEach(async (to, from) => {
   let cookie = localStorage.getItem("music-cookie");
   if (!cookie) {
     if (to.name != "login") {
