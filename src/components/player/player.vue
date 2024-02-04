@@ -201,7 +201,7 @@ const playSong = (index, item) => {
   }
 
   .info {
-    font-family: "灵悦黑体";
+    font-family: "myfont-3";
     display: flex;
     flex-flow: row nowrap;
     justify-content: space-around;

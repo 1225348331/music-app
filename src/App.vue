@@ -98,7 +98,7 @@ onMounted(() => {});
 .all-layout {
   height: 100%;
   transition: transform 0.3s, opacity 0.3s;
-  font-family: "灵悦黑体";
+  font-family: "myfont-3";
   .n-layout-header {
     height: 60px;
     display: flex;
