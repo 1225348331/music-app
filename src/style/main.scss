@@ -15,8 +15,18 @@
 }
 
 @font-face {
-  font-family: "灵悦黑体";
+  font-family: "myfont-3";
   src: url(@/assets/font/灵悦黑体.ttf);
+}
+
+@font-face {
+  font-family: "myfont-4";
+  src: url(@/assets/font/OPlusSans3-Medium.ttf);
+}
+
+@font-face {
+  font-family: "myfont-5";
+  src: url(@/assets/font/HarmonyOS_Sans_SC_Medium.ttf);
 }
 
 html,
