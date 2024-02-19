@@ -42,8 +42,8 @@ const textColor = computed(() => {
 // 歌词滚动距离
 const lyricHeight = ref(80);
 const marginTop = computed(() => {
-  return musicStore.lyric.currentLyricIndex >= 2
-    ? -(musicStore.lyric.currentLyricIndex - 1) * lyricHeight.value + "px"
+  return musicStore.lyric.currentLyricIndex >= 5
+    ? -(musicStore.lyric.currentLyricIndex - 5) * lyricHeight.value + "px"
     : "";
 });
 
@@ -197,8 +197,12 @@ onMounted(() => {
     color: var(--text-color);
     .container {
       width: 35vw;
+      display: flex;
+      flex-flow: column nowrap;
+      align-items: center;
       .pic {
         border-radius: 10px;
+        margin: 10px;
         img {
           width: 30vw;
           height: 30vw;
@@ -211,6 +215,7 @@ onMounted(() => {
       .info {
         text-align: center;
         font-size: 14px;
+        margin: 10px;
         .name {
           font-size: 22px;
           font-weight: bolder;
@@ -280,31 +285,25 @@ onMounted(() => {
     }
   }
   .right {
-    height: 100vh;
+    height: 90vh;
     width: 55vw;
-    text-align: center;
+    box-sizing: border-box;
     display: flex;
-    flex-flow: column nowrap;
-    justify-content: space-between;
-    align-items: center;
     color: var(--text-color);
-    padding: 8px 0px;
+    padding-left: 100px;
     font-weight: bold;
     overflow: hidden;
-
-    // @media screen and (max-width: 500px) {
-    //   width: 100vw;
-    //   height: 55vh;
-    //   justify-content: flex-end;
-    // }
+    border: 1px dashed red;
 
     .lyricList {
+      width: 100%;
       display: flex;
       flex-flow: column nowrap;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       transition: all 1s ease-in-out;
-      font-family: "myfont-3";
+      font-family: "myfont-5";
+      border: 1px solid yellow;
 
       & > div {
         box-sizing: border-box;
